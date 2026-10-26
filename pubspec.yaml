@@ -39,6 +39,7 @@ dependencies:
   drift_flutter: ^0.3.1
   path_provider: ^2.1.6
   cached_network_image: ^4.0.5
+  dio: ^5.11.1
 
 dev_dependencies:
   flutter_test:
