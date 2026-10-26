@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import '../../features/pokemon/domain/entities/pokemon.dart';
+import '../../features/pokemon/domain/entities/pokemon_type.dart';
 
 part 'app_database.g.dart';
 
@@ -73,4 +75,60 @@ class AppDatabase extends _$AppDatabase {
   // Subir si cambia el esquema
   @override
   int get schemaVersion => 1;
+
+  // Inserta o actualiza el catálogo en una sola transacción
+  Future<void> upsertPokemons(List<Pokemon> lista) {
+    return transaction(() async {
+      final now = DateTime.now();
+
+      // Se borran las relaciones viejas
+      await (delete(pokemonTypes)
+        ..where((r) => r.pokemonId.isIn(lista.map((p) => p.id))))
+          .go();
+
+      await batch((b) {
+        b.insertAllOnConflictUpdate(
+          pokemons,
+          lista.map((p) {
+            return PokemonsCompanion.insert(
+              id: Value(p.id),
+              name: p.name,
+              nationalDexNumber: p.nationalDexNumber,
+              imageUrl: Value(p.imageUrl),
+              generationId: Value(p.generationId),
+              updatedAt: now,
+            );
+          }).toList(),
+        );
+
+        // Los tipos se repiten entre pokémon, se guardan una vez por id
+        final tipos = <int, PokemonType>{};
+        for (final p in lista) {
+          for (final t in p.types) {
+            tipos[t.id] = t;
+          }
+        }
+        b.insertAllOnConflictUpdate(
+          types,
+          tipos.values.map((t) {
+            return TypesCompanion(id: Value(t.id), name: Value(t.name));
+          }).toList(),
+        );
+
+        // La relación con su slot (1 principal, 2 secundario)
+        for (final p in lista) {
+          for (var i = 0; i < p.types.length; i++) {
+            b.insert(
+              pokemonTypes,
+              PokemonTypesCompanion.insert(
+                pokemonId: p.id,
+                typeId: p.types[i].id,
+                slot: i + 1,
+              ),
+            );
+          }
+        }
+      });
+    });
+  }
 }
