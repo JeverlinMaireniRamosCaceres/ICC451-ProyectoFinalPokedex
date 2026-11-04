@@ -20,15 +20,14 @@ extension PokemonDtoMapper on PokemonDto {
       nationalDexNumber: speciesId,
       types: sortedTypes.map((t) => t.toEntity()).toList(),
 
-      // Se utiliza el sprite si esta disponile, de lo contrario se utiliza el artwork
-      // Se prioriza el sprite porque pesa menos
+      // El sprite es para el catálogo y el artwork para el detalle.
+      // Si no hay sprite, el catálogo usa el artwork
       imageUrl: sprite ?? artwork,
-      // El artwork se guarda aparte para el detalle (RF-DET-01)
       artworkUrl: artwork,
       generationId: generationId,
       stats: mappedStats,
-      // Se calcula aquí una vez para poder ordenar por total en SQL (RF-FIL-03)
-      baseStatTotal: mappedStats.fold<int>(0, (sum, s) => sum + s.baseStat),
+      // Suma de las 6 estadísticas base, para ordenar el catálogo
+      baseStatTotal: mappedStats.fold(0, (sum, s) => sum + s.baseStat),
     );
   }
 }
