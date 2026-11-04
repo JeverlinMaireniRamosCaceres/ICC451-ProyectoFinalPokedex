@@ -1,4 +1,5 @@
 import '../../domain/entities/pokemon.dart';
+import '../../domain/entities/pokemon_stat.dart';
 import '../../domain/entities/pokemon_type.dart';
 import '../dtos/pokemon_dto.dart';
 
@@ -11,6 +12,8 @@ extension PokemonDtoMapper on PokemonDto {
     // Se ordena para que el 1 quede primero
     final sortedTypes = [...types]..sort((a, b) => a.slot.compareTo(b.slot));
 
+    final mappedStats = stats.map((s) => s.toEntity()).toList();
+
     return Pokemon(
       id: id,
       name: name,
@@ -20,7 +23,12 @@ extension PokemonDtoMapper on PokemonDto {
       // Se utiliza el sprite si esta disponile, de lo contrario se utiliza el artwork
       // Se prioriza el sprite porque pesa menos
       imageUrl: sprite ?? artwork,
+      // El artwork se guarda aparte para el detalle (RF-DET-01)
+      artworkUrl: artwork,
       generationId: generationId,
+      stats: mappedStats,
+      // Se calcula aquí una vez para poder ordenar por total en SQL (RF-FIL-03)
+      baseStatTotal: mappedStats.fold<int>(0, (sum, s) => sum + s.baseStat),
     );
   }
 }
@@ -29,6 +37,13 @@ extension PokemonDtoMapper on PokemonDto {
 extension PokemonTypeDtoMapper on PokemonTypeDto {
   PokemonType toEntity() {
     return PokemonType(id: typeId, name: typeName);
+  }
+}
+
+/// Convierte una estadística enviada por la API en el pokemonstat que usa la app
+extension PokemonStatDtoMapper on PokemonStatDto {
+  PokemonStat toEntity() {
+    return PokemonStat(name: name, baseStat: baseStat);
   }
 }
 
