@@ -9,6 +9,7 @@ import '../../domain/entities/pokemon.dart';
 import '../../domain/repositories/pokemon_repository.dart';
 import 'catalog_state.dart';
 import '../../../../core/network/connectivity_monitor.dart';
+import '../../data/sync/pokemon_sync_coordinator.dart';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -27,11 +28,20 @@ final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
   return PokemonRemoteDataSource();
 });
 
+final pokemonSyncCoordinatorProvider =
+Provider<PokemonSyncCoordinator>((ref) {
+  return PokemonSyncCoordinator(
+    ref.watch(pokemonRemoteDataSourceProvider),
+    ref.watch(pokemonLocalDataSourceProvider),
+    ref.watch(appDatabaseProvider),
+  );
+});
+
 // Se expone el contrato del dominio, no la clase concreta
 final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   return PokemonRepositoryImpl(
     local: ref.watch(pokemonLocalDataSourceProvider),
-    remote: ref.watch(pokemonRemoteDataSourceProvider),
+    syncCoordinator: ref.watch(pokemonSyncCoordinatorProvider),
   );
 });
 
