@@ -30,13 +30,11 @@ class PokemonSyncCoordinator {
   // Para que no ocurran dos a la vez
   Future<void>? _currentSync;
 
-  PokemonSyncCoordinator({
-    required PokemonRemoteDataSource remote,
-    required PokemonLocalDataSource local,
-    required AppDatabase db,
-  })  : _remote = remote,
-        _local = local,
-        _db = db;
+  PokemonSyncCoordinator(
+      this._remote,
+      this._local,
+      this._db,
+      );
 
   /// Trae nuevamente la primera pagina para actualizar lo primero que ve el usuario
   /// Es llamada al abrir la app
