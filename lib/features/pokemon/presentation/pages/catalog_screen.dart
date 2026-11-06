@@ -14,6 +14,7 @@ class CatalogScreen extends ConsumerWidget {
       state: ref.watch(catalogStateProvider),
       onRetry: () {},
       onLoadMore: () {},
+      monitor: ref.watch(connectivityMonitorProvider),
     );
   }
 }

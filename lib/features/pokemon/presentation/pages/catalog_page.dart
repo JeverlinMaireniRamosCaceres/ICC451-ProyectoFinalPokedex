@@ -5,6 +5,8 @@ import '../../../../core/widgets/error_state.dart';
 import '../../domain/entities/pokemon.dart';
 import '../providers/catalog_state.dart';
 import '../widgets/pokemon_card.dart';
+import '../../../../core/network/connectivity_monitor.dart';
+import '../../../../core/widgets/connectivity_indicator.dart';
 
 // Pantalla del catálogo, solo dibuja según el estado que recibe (RF-CAT-04)
 class CatalogPage extends StatelessWidget {
@@ -13,11 +15,13 @@ class CatalogPage extends StatelessWidget {
     required this.state,
     required this.onRetry,
     required this.onLoadMore,
+    required this.monitor,
   });
 
   final CatalogState state;
   final VoidCallback onRetry;
   final VoidCallback onLoadMore;
+  final ConnectivityMonitor monitor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +37,18 @@ class CatalogPage extends StatelessWidget {
         },
         child: CustomScrollView(
           slivers: [
-            const SliverAppBar.large(
-              title: Text(
-                'Pokédex',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-            ),
+        SliverAppBar.large(
+        title: const Text(
+          'Pokédex',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ConnectivityIndicator(monitor: monitor),
+          ),
+        ],
+      ),
             // El switch es exhaustivo porque CatalogState es sealed
             switch (state) {
               CatalogLoading() => const SliverFillRemaining(
