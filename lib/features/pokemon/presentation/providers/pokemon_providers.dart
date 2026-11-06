@@ -8,6 +8,7 @@ import '../../data/repositories/pokemon_repository_impl.dart';
 import '../../domain/entities/pokemon.dart';
 import '../../domain/repositories/pokemon_repository.dart';
 import 'catalog_state.dart';
+import '../../../../core/network/connectivity_monitor.dart';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -51,4 +52,14 @@ final catalogStateProvider = Provider<CatalogState>((ref) {
     ),
     _ => const CatalogLoading(),
   };
+});
+
+final connectivityMonitorProvider = Provider<ConnectivityMonitor>((ref) {
+  final monitor = ConnectivityMonitor();
+
+  monitor.start();
+
+  ref.onDispose(monitor.dispose);
+
+  return monitor;
 });
