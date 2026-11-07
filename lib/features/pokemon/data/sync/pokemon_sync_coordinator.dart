@@ -30,11 +30,15 @@ class PokemonSyncCoordinator {
   // Para que no ocurran dos a la vez
   Future<void>? _currentSync;
 
+  // Avisa cuando empieza y termina una sincronización, para el indicador
+  final void Function(bool syncing)? _onSyncingChanged;
+
   PokemonSyncCoordinator(
       this._remote,
       this._local,
-      this._db,
-      );
+      this._db, {
+        void Function(bool syncing)? onSyncingChanged,
+      }) : _onSyncingChanged = onSyncingChanged;
 
   /// Trae nuevamente la primera pagina para actualizar lo primero que ve el usuario
   /// Es llamada al abrir la app
@@ -67,6 +71,7 @@ class PokemonSyncCoordinator {
     final previousOffset = previous?.nextOffset ?? 0;
 
     await _writeStatus(SyncStatus.syncing);
+    _onSyncingChanged?.call(true);
 
     try {
       final page = await _remote.fetchPokemonPage(
@@ -108,7 +113,11 @@ class PokemonSyncCoordinator {
       debugPrint('[Sync] Error en offset $offset $e');
       await _writeStatus(SyncStatus.error);
       rethrow;
+    } finally {
+      // Se ejecuta siempre, haya funcionado o no
+      _onSyncingChanged?.call(false);
     }
+
   }
 
   Future<SyncMetadataData?> _readMetadata() {

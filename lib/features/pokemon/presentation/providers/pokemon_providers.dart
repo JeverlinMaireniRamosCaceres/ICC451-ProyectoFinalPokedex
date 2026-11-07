@@ -34,6 +34,7 @@ Provider<PokemonSyncCoordinator>((ref) {
     ref.watch(pokemonRemoteDataSourceProvider),
     ref.watch(pokemonLocalDataSourceProvider),
     ref.watch(appDatabaseProvider),
+    onSyncingChanged: ref.watch(connectivityMonitorProvider).setSyncing,
   );
 });
 
