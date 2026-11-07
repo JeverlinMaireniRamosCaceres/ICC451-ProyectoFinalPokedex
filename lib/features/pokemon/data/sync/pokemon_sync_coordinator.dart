@@ -37,8 +37,8 @@ class PokemonSyncCoordinator {
       this._remote,
       this._local,
       this._db, {
-        void Function(bool syncing)? onSyncingChanged,
-      }) : _onSyncingChanged = onSyncingChanged;
+        this._onSyncingChanged,
+      });
 
   /// Trae nuevamente la primera pagina para actualizar lo primero que ve el usuario
   /// Es llamada al abrir la app
