@@ -72,7 +72,9 @@ class ConnectivityMonitor {
       return;
     }
 
-    final apiAvailable = await _pingApi();
+    var apiAvailable = await _pingApi();
+    // Un solo fallo puede ser lentitud momentánea, se confirma con otro intento
+    if (!apiAvailable) apiAvailable = await _pingApi();
     _setBaseStatus(
       apiAvailable
           ? ConnectivityStatus.online
