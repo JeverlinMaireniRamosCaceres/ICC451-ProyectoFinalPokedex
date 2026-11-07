@@ -26,7 +26,8 @@ class ConnectivityMonitor {
   Timer? _debounceTimer;
   Timer? _periodicTimer;
 
-  ConnectivityStatus _baseStatus = ConnectivityStatus.offline;
+  // Es null hasta que termina la primera comprobación
+  ConnectivityStatus? _baseStatus;
   bool _isSyncing = false;
   ConnectivityStatus? _current;
 
@@ -106,9 +107,14 @@ class ConnectivityMonitor {
 
   /// Calcula el estado final y lo emite solo si cambió.
   void _emit() {
-    final next = _baseStatus == ConnectivityStatus.online && _isSyncing
+    final base = _baseStatus;
+
+    // Todavía no se ha hecho la primera comprobación, no se muestra nada
+    if (base == null) return;
+
+    final next = base == ConnectivityStatus.online && _isSyncing
         ? ConnectivityStatus.syncing
-        : _baseStatus;
+        : base;
 
     if (next == _current) return;
 
