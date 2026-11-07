@@ -4,16 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
-import 'dev_seed.dart';
 import 'features/pokemon/presentation/providers/pokemon_providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   final container = ProviderContainer();
-  // TEMPORAL: siembra datos de prueba, sin await para no bloquear la interfaz (OF-03)
+  // Sincroniza el catálogo desde la API sin bloquear la interfaz
   unawaited(
-    sembrarDatosDePrueba(container.read(pokemonLocalDataSourceProvider)),
+    container
+        .read(pokemonRepositoryProvider)
+        .refreshCatalog()
+        .catchError((error) {
+      debugPrint('Error al sincronizar el catálogo: $error');
+    }),
   );
 
   runApp(UncontrolledProviderScope(container: container, child: const App()));
