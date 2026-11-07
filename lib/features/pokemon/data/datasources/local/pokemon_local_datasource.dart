@@ -58,6 +58,13 @@ class PokemonLocalDataSource {
         .toList();
   }
 
+  // Estado de la sincronización de un recurso, null si nunca se ha sincronizado
+  Stream<SyncMetadataData?> watchSyncMetadata(String resourceKey) {
+    return (_db.select(
+      _db.syncMetadata,
+    )..where((m) => m.resourceKey.equals(resourceKey))).watchSingleOrNull();
+  }
+
   // Inserta o actualiza el catálogo en una sola transacción
   Future<void> upsertPokemons(List<Pokemon> lista) {
     return _db.transaction(() async {
