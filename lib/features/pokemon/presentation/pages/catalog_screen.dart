@@ -10,11 +10,20 @@ class CatalogScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Pide la siguiente página. Si falla, el error queda en consola
+    // y el estado error queda guardado en SyncMetadata
+    void loadMore() {
+      ref.read(pokemonRepositoryProvider).fetchNextPage().catchError((Object e) {
+        debugPrint('No se pudo cargar más $e');
+      });
+    }
+
     return CatalogPage(
       state: ref.watch(catalogStateProvider),
-      onRetry: () {},
-      onLoadMore: () {},
+      onRetry: loadMore,
+      onLoadMore: loadMore,
       monitor: ref.watch(connectivityMonitorProvider),
     );
   }
+
 }
