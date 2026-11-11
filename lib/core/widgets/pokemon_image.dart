@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-// Imagen del pokémon con caché en disco y recurso de respaldo
+// Muestra la imagen del pokemon
+// La guarda en el telefono para verla sin conexion
+// si no esta disponible muestra un icono
 class PokemonImage extends StatelessWidget {
   const PokemonImage({
     super.key,
@@ -18,7 +20,7 @@ class PokemonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Se decodifica al tamaño real en pixeles, no a la resolución completa
+    // La imagen se carga en el tamaño en que se muestra, para evitar gastar memoria
     final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
 
     return Semantics(
@@ -43,7 +45,7 @@ class PokemonImage extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
-                // Sin red y sin imagen guardada, no se rompe nada
+                // Si no hay internet y la imagen no estaba guardada, se muestra el icono
                 errorWidget: (_, _, _) => _Fallback(size: size),
               ),
       ),
@@ -51,7 +53,7 @@ class PokemonImage extends StatelessWidget {
   }
 }
 
-// Recurso de respaldo cuando la imagen no está disponible
+// Icono que se muestra cuando no hay imagen
 class _Fallback extends StatelessWidget {
   const _Fallback({required this.size});
 

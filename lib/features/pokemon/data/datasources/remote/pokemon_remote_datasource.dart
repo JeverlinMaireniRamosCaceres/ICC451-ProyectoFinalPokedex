@@ -16,7 +16,7 @@ class PokemonRemoteDataSource {
           dio ??
           Dio(
             BaseOptions(
-              // Tiempo máximo de espera para conectar y para recibir la respuesta
+              // Es el tiempo máximo de espera para conectar y para recibir la respuesta
               connectTimeout: const Duration(seconds: 10),
               receiveTimeout: const Duration(seconds: 10),
               headers: {'Content-Type': 'application/json'},
@@ -35,6 +35,9 @@ class PokemonRemoteDataSource {
     // Se imprime la consulta para poder visualizarla
     debugPrint('[GraphQL] CatalogoPokemon $variables');
 
+    // en GraphQL todas las peticiones van a la misma url
+    // y la consulta va en el cuerpo de la peticion,
+    // por eso se usa POST junto con las variables
     final response = await _dio.post<Map<String, dynamic>>(
       _endpoint,
       data: {'query': catalogoPokemonQuery, 'variables': variables},

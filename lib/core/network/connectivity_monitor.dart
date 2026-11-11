@@ -6,16 +6,16 @@ import 'package:flutter/foundation.dart';
 
 import 'connectivity_status.dart';
 
-/// Esta clase se encarga de observar la conexion real de la PokeAPI,
-/// y avisa por un Stream cuando el estado cambia
+/// Esta clase se encarga de observar la conexion real de la pokeapi,
+/// y avisa cuando el estado cambia
 class ConnectivityMonitor {
   static const String _endpoint = 'https://graphql.pokeapi.co/v1beta2';
 
-  // Espera antes de evaluar un cambio de red, para evitar parpadeos
+  // Espera antes de evaluar un cambio de red
   static const Duration _debounce = Duration(seconds: 1);
 
-  // Cada cuánto se vuelve a comprobar la API aunque la red no cambie.
-  // No es muy frecuente porque la API tiene límite de peticiones
+  // Se define el periodo en el que se vuelve a comprobar la API aunque la red no cambie
+  // No es muy frecuente por el límite de peticiones de la API
   static const Duration _periodicCheck = Duration(minutes: 2);
 
   final Connectivity _connectivity;
@@ -26,7 +26,7 @@ class ConnectivityMonitor {
   Timer? _debounceTimer;
   Timer? _periodicTimer;
 
-  // Es null hasta que termina la primera comprobación
+  // Es null hasta que se hace la primera comprobacion
   ConnectivityStatus? _baseStatus;
   bool _isSyncing = false;
   ConnectivityStatus? _current;
@@ -42,17 +42,18 @@ class ConnectivityMonitor {
               ),
             );
 
-  /// Stream que emite el estado cada vez que cambia.
+  /// es el stream que lanza el estado cada vez que cambia
   Stream<ConnectivityStatus> get statusStream => _controller.stream;
 
-  /// Estado actual, para quien necesite consultarlo sin escuchar el Stream.
+  /// Es el estado actual, para consultarlo sin escuchar el stream
   ConnectivityStatus get currentStatus =>
       _current ?? ConnectivityStatus.offline;
 
-  /// Empieza a vigilar la conexión. Se llama una vez al iniciar la app.
+  /// Comienza a vigilar la conexion
+  /// Se llama cuando inicia la app
   Future<void> start() async {
     _subscription = _connectivity.onConnectivityChanged.listen((_) {
-      // Si la red cambia varias veces seguidas, solo se evalúa la última
+      // si la red cambia varias veces continuas, solo se considera la ultima
       _debounceTimer?.cancel();
       _debounceTimer = Timer(_debounce, checkNow);
     });
@@ -62,7 +63,7 @@ class ConnectivityMonitor {
     await checkNow();
   }
 
-  /// Comprueba ahora mismo la red y la API.
+  /// Verifica en el momento la red y la API
   Future<void> checkNow() async {
     final results = await _connectivity.checkConnectivity();
     final hasNetwork = results.any((r) => r != ConnectivityResult.none);
@@ -73,7 +74,7 @@ class ConnectivityMonitor {
     }
 
     var apiAvailable = await _pingApi();
-    // Un solo fallo puede ser lentitud momentánea, se confirma con otro intento
+    // Si falla, se confirma con otro intento
     if (!apiAvailable) apiAvailable = await _pingApi();
     _setBaseStatus(
       apiAvailable
@@ -82,13 +83,15 @@ class ConnectivityMonitor {
     );
   }
 
-  /// La sincronización llama a este método al empezar (true) y al terminar (false).
+  /// El coordinador llama este metodo cuando empieza a descargar y coloca el estado en true
+  /// Cuando termina la descarga lo coloca en false
+  /// De esta forma el indicador muestra sincronizando cuando se esta descargando
   void setSyncing(bool value) {
     _isSyncing = value;
     _emit();
   }
 
-  /// Envía la consulta GraphQL más pequeña posible para saber si la API responde.
+  /// Envia la consulta GraphQL más pequeña posible para saber si la API responde
   Future<bool> _pingApi() async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -107,11 +110,11 @@ class ConnectivityMonitor {
     _emit();
   }
 
-  /// Calcula el estado final y lo emite solo si cambió.
+  /// Calcula el estado final y lo emite solo si cambio
   void _emit() {
     final base = _baseStatus;
 
-    // Todavía no se ha hecho la primera comprobación, no se muestra nada
+    // no se ha hecho la comprobacion, no muestra nada
     if (base == null) return;
 
     final next = base == ConnectivityStatus.online && _isSyncing
@@ -125,7 +128,7 @@ class ConnectivityMonitor {
     _controller.add(next);
   }
 
-  /// Libera los recursos al cerrar la app.
+  /// Libera los recursos al cerrar la app
   Future<void> dispose() async {
     _debounceTimer?.cancel();
     _periodicTimer?.cancel();

@@ -1,6 +1,8 @@
 import '../../../../core/errors/failure.dart';
 import '../../domain/entities/pokemon.dart';
 
+/// Los cuatro estados de la pantalla del catalogo
+/// sealed hace que solo existan estos cuatro
 sealed class CatalogState {
   const CatalogState();
 }

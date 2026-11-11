@@ -4,7 +4,7 @@ import '../../../../../core/database/app_database.dart';
 import '../../../domain/entities/pokemon.dart';
 import '../../../domain/entities/pokemon_type.dart';
 
-// Un pokémon con sus tipos ya agrupados, es lo que entrega este data source
+// Este datasource entrega un pokemon con sus tipos ya agrupados
 class PokemonWithTypes {
   const PokemonWithTypes(this.pokemon, this.types);
 
@@ -22,6 +22,7 @@ class PokemonLocalDataSource {
   Stream<List<PokemonWithTypes>> watchCatalog() {
     final query =
         _db.select(_db.pokemons).join([
+          // trae el pokemon aunque no tenga tipos
           leftOuterJoin(
             _db.pokemonTypes,
             _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),

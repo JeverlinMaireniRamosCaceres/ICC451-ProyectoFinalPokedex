@@ -10,9 +10,17 @@ import '../mappers/pokemon_dto_mapper.dart';
 
 /// Son los cuatro valores posibles de la columna de estado para la sincronizacion
 abstract final class SyncStatus {
+
+  // termino bien y falta catalogo por descarga
   static const String idle = 'idle';
+
+  // se esta descargando una pagina
   static const String syncing = 'syncing';
+
+  // todos los pokemon se descargaron
   static const String complete = 'complete';
+
+  // fallo la ultima pagina
   static const String error = 'error';
 }
 
@@ -20,6 +28,8 @@ abstract final class SyncStatus {
 /// La interfaz no lee desde esta clase, solo de la base de datos local
 class PokemonSyncCoordinator {
   static const String resourceKey = 'pokemon_catalog';
+
+  // se piden 20 pokemons por pagina
   static const int pageSize = 20;
 
   final PokemonRemoteDataSource _remote;
@@ -46,7 +56,7 @@ class PokemonSyncCoordinator {
     return _runExclusive(() => _syncPage(offset: 0));
   }
 
-  /// Retorna la siguiente pagina pendiente
+  /// Trae y guarda la siguiente pagina pendiente
   /// Es usada en el scroll infinito y en el botón Reintentar
   Future<void> fetchNextPage() {
     return _runExclusive(() async {
@@ -66,6 +76,10 @@ class PokemonSyncCoordinator {
     return future;
   }
 
+  /// Se descarga una pagina de la API y se guarda en la base junto con el nuevo
+  /// nextOffset, en una transaccion
+  /// Si falla, marca error
+  /// el nextOffset es quien dice desde que numero hay que continuar la descarga
   Future<void> _syncPage({required int offset}) async {
     final previous = await _readMetadata();
     final previousOffset = previous?.nextOffset ?? 0;
@@ -112,6 +126,9 @@ class PokemonSyncCoordinator {
     } catch (e) {
       debugPrint('[Sync] Error en offset $offset $e');
       await _writeStatus(SyncStatus.error);
+
+      // Se vuelve a lanzar el error para que la pantalla sepa que fallo
+      // El marcador no se movio, por lo que al reintentar se pide la misma pagina
       rethrow;
     } finally {
       // Se ejecuta siempre, haya funcionado o no

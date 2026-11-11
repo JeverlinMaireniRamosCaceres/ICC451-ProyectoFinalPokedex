@@ -7,6 +7,8 @@ import 'app/app.dart';
 import 'features/pokemon/presentation/providers/pokemon_providers.dart';
 
 void main() {
+
+  // Prepara Flutter antes de usar la base de datos y los otros paquetes
   WidgetsFlutterBinding.ensureInitialized();
 
   final container = ProviderContainer();
