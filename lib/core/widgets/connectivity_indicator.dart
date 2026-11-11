@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../network/connectivity_monitor.dart';
 import '../network/connectivity_status.dart';
 
+/// Muestra el estado de la conexion con texto, iconos y color
+/// Escucha el stream del monitor y vuelve a dibujarlo cada vez que el estado cambia
 class ConnectivityIndicator extends StatelessWidget {
   const ConnectivityIndicator({
     super.key,
@@ -13,6 +15,10 @@ class ConnectivityIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // StreamBuilder escucha el Stream del monitor y vuelve a dibujar
+    // el indicador cada vez que llega un estado nuevo
+    // initialData muestra el estado actual mientras llega el primero
     return StreamBuilder<ConnectivityStatus>(
       stream: monitor.statusStream,
       initialData: monitor.currentStatus,
@@ -23,6 +29,8 @@ class ConnectivityIndicator extends StatelessWidget {
         late final IconData icon;
         late final Color color;
 
+        // Cada estado tiene un texto, un color y un icono, para que se entienda mejor
+        // y no dependa solo del color
         switch (status) {
           case ConnectivityStatus.online:
             message = 'Conectado';
@@ -47,7 +55,7 @@ class ConnectivityIndicator extends StatelessWidget {
 
         return Semantics(
           label: 'Estado de conexión: $message',
-          // Anuncia el cambio de estado sin que el usuario toque nada
+          // El lector de pantalla lee el cambio de estado sin que el usuario toque nada
           liveRegion: true,
           // Evita que el lector de pantalla lea también el texto de adentro
           excludeSemantics: true,

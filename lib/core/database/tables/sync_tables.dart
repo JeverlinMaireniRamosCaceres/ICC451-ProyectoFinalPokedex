@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-// Estado de la sincronización por recurso
+// Estado de la sincronización de cada seccion del catalogo
 class SyncMetadata extends Table {
   TextColumn get resourceKey => text()();
   DateTimeColumn get lastSuccessAt => dateTime().nullable()();

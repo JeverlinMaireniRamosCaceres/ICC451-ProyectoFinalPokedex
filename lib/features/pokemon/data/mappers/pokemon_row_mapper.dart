@@ -25,6 +25,7 @@ extension TypeRowMapper on TypeRow {
   }
 }
 
+// Convierte la lista completa que entrega el watch catalog en entidades
 extension PokemonWithTypesListMapper on List<PokemonWithTypes> {
   List<Pokemon> toEntities() {
     return map((p) => p.toEntity()).toList();

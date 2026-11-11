@@ -20,6 +20,8 @@ class PokemonDto {
     required this.stats,
   });
 
+  /// Convierte el mapa del JSON en un pokemondto
+  /// Si una lista no llega en el JSON, se usa una lista vacia, para que la app no falle
   factory PokemonDto.fromJson(Map<String, dynamic> json) {
     // pokemonsprites es una lista, por eso
     // se toma el primer elemento, si existe
@@ -85,8 +87,8 @@ class PokemonStatDto {
   factory PokemonStatDto.fromJson(Map<String, dynamic> json) {
     final stat = json['stat'] as Map<String, dynamic>;
     return PokemonStatDto(
-      name: stat['name'] as String,
       // es el nombre de la estadistica enviado por la API
+      name: stat['name'] as String,
       baseStat: json['base_stat'] as int, // valor de la estadistica
     );
   }
@@ -100,6 +102,9 @@ class PokemonPageDto {
 
   const PokemonPageDto({required this.pokemons, required this.totalCount});
 
+  /// Convierte el JSON de la respuesta en un PokemonPageDto, con la lista de pokemon de
+  /// la pagina y el total
+  /// Si una lista no llega en el JSON, se usa una lista vacia, para que la app no falle
   factory PokemonPageDto.fromJson(Map<String, dynamic> data) {
     final list = data['pokemon'] as List<dynamic>? ?? [];
     final aggregate = data['pokemon_aggregate']?['aggregate'];
@@ -107,6 +112,7 @@ class PokemonPageDto {
       pokemons: list
           .map((p) => PokemonDto.fromJson(p as Map<String, dynamic>))
           .toList(),
+      // si la API no manda el total, se usa 0 en vez de fallar
       totalCount: aggregate?['count'] as int? ?? 0,
     );
   }

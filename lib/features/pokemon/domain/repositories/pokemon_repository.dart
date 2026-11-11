@@ -5,11 +5,13 @@ enum SyncState {
   // Todavía no empezó o hay más páginas pendientes
   idle,
   syncing,
-  // Ya se descargó todo el catálogo
+  // Ya se descargo todo el catálogo
   complete,
   error,
 }
 
+/// Es la interfaz, digase lo que se puede pedir
+/// Es implementado por PokemonRepositoryImpl
 abstract class PokemonRepository {
   Stream<List<Pokemon>> watchCatalog();
 

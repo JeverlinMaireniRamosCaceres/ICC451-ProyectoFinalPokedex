@@ -28,6 +28,8 @@ final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
   return PokemonRemoteDataSource();
 });
 
+// Conecta el coordinador con el monitor, para que el indicador
+// muestre Sincronizando
 final pokemonSyncCoordinatorProvider = Provider<PokemonSyncCoordinator>((ref) {
   return PokemonSyncCoordinator(
     ref.watch(pokemonRemoteDataSourceProvider),

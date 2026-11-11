@@ -4,7 +4,8 @@ import '../../../../core/widgets/pokemon_image.dart';
 import '../../domain/entities/pokemon.dart';
 import 'type_colors.dart';
 
-// Tarjeta del catálogo teñida con el color de su tipo principal (RF-CAT-01)
+// Tarjeta de cada pokemon en el catalogo
+// el fondo usa el color de su tipo principal
 class PokemonCard extends StatelessWidget {
   const PokemonCard({super.key, required this.pokemon, this.onTap});
 
@@ -20,8 +21,7 @@ class PokemonCard extends StatelessWidget {
     final number = '#${pokemon.nationalDexNumber.toString().padLeft(4, '0')}';
     final typeNames = pokemon.types.map((t) => _capitalize(t.name)).toList();
 
-    // Fondo suave: el color del tipo mezclado con el fondo del tema
-    // Así el texto oscuro siempre contrasta (RNF-ACC-02)
+    // El color del tipo se pone claro para que el texto se lea bien
     final mainColor = pokemon.types.isEmpty
         ? colors.outline
         : typeColor(pokemon.types.first.name);
@@ -30,7 +30,7 @@ class PokemonCard extends StatelessWidget {
       colors.surface,
     );
 
-    // Una sola etiqueta para lectores de pantalla (RNF-ACC-01)
+    // El lector de pantalla lee toda la tarjeta en una sola frase
     return Semantics(
       button: onTap != null,
       label: '$name, número $number, tipos: ${typeNames.join(', ')}',
@@ -54,11 +54,9 @@ class PokemonCard extends StatelessWidget {
                   ),
                 ),
                 // La imagen ocupa el espacio que sobra, es lo más grande
-                // La imagen ocupa el espacio que sobra, es lo más grande
                 Expanded(
                   child: Center(
-                    // El sprite trae margen transparente, se escala para que
-                    // el pokémon se vea grande sin hacer la tarjeta más alta
+                    // El sprite tiene un borde transparente grande, por eso se agranda
                     child: Transform.scale(
                       scale: 1.35,
                       child: PokemonImage(url: pokemon.imageUrl, size: 110,  filterQuality: FilterQuality.none),
@@ -93,7 +91,7 @@ class PokemonCard extends StatelessWidget {
   }
 }
 
-// El tipo lleva texto y un punto de color, no depende solo del color
+// Etiqueta del tipo con texto y un punto de color
 class _TypeChip extends StatelessWidget {
   const _TypeChip({required this.label, required this.color});
 
