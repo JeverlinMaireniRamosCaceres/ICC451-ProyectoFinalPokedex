@@ -1,23 +1,23 @@
 /// Es la representación de un Pokémon igual que como llega de la API GraphQL de PokeAPI
 class PokemonDto {
   final int id;
-  final String name;
-  final int speciesId;
-  final List<PokemonTypeDto> types;
+  final String nombre;
+  final int idEspecie;
+  final List<PokemonTypeDto> tipos;
   final String? sprite;
   final String? artwork;
-  final int? generationId;
-  final List<PokemonStatDto> stats;
+  final int? idGeneracion;
+  final List<PokemonStatDto> estadisticas;
 
   const PokemonDto({
     required this.id,
-    required this.name,
-    required this.speciesId,
-    required this.types,
+    required this.nombre,
+    required this.idEspecie,
+    required this.tipos,
     required this.sprite,
     required this.artwork,
-    required this.generationId,
-    required this.stats,
+    required this.idGeneracion,
+    required this.estadisticas,
   });
 
   /// Convierte el mapa del JSON en un pokemondto
@@ -25,26 +25,26 @@ class PokemonDto {
   factory PokemonDto.fromJson(Map<String, dynamic> json) {
     // pokemonsprites es una lista, por eso
     // se toma el primer elemento, si existe
-    final sprites = json['pokemonsprites'] as List<dynamic>? ?? [];
-    final firstSprite = sprites.isNotEmpty
-        ? sprites.first as Map<String, dynamic>
+    final imagenes = json['pokemonsprites'] as List<dynamic>? ?? [];
+    final primeraImagen = imagenes.isNotEmpty
+        ? imagenes.first as Map<String, dynamic>
         : null;
 
     // datos de la especie
     // pueden estar nulos
-    final species = json['pokemonspecy'] as Map<String, dynamic>?;
+    final especie = json['pokemonspecy'] as Map<String, dynamic>?;
 
     return PokemonDto(
       id: json['id'] as int,
-      name: json['name'] as String,
-      speciesId: json['pokemon_species_id'] as int,
-      types: (json['pokemontypes'] as List<dynamic>? ?? [])
+      nombre: json['name'] as String,
+      idEspecie: json['pokemon_species_id'] as int,
+      tipos: (json['pokemontypes'] as List<dynamic>? ?? [])
           .map((t) => PokemonTypeDto.fromJson(t as Map<String, dynamic>))
           .toList(),
-      sprite: firstSprite?['sprite'] as String?,
-      artwork: firstSprite?['artwork'] as String?,
-      generationId: species?['generation_id'] as int?,
-      stats: (json['pokemonstats'] as List<dynamic>? ?? [])
+      sprite: primeraImagen?['sprite'] as String?,
+      artwork: primeraImagen?['artwork'] as String?,
+      idGeneracion: especie?['generation_id'] as int?,
+      estadisticas: (json['pokemonstats'] as List<dynamic>? ?? [])
           .map((s) => PokemonStatDto.fromJson(s as Map<String, dynamic>))
           .toList(),
     );
@@ -57,21 +57,21 @@ class PokemonDto {
 /// 1 significa que es el principal, el 2 es el secundario
 class PokemonTypeDto {
   final int slot;
-  final int typeId;
-  final String typeName;
+  final int idTipo;
+  final String nombreTipo;
 
   const PokemonTypeDto({
     required this.slot,
-    required this.typeId,
-    required this.typeName,
+    required this.idTipo,
+    required this.nombreTipo,
   });
 
   factory PokemonTypeDto.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as Map<String, dynamic>;
+    final tipo = json['type'] as Map<String, dynamic>;
     return PokemonTypeDto(
       slot: json['slot'] as int,
-      typeId: type['id'] as int,
-      typeName: type['name'] as String,
+      idTipo: tipo['id'] as int,
+      nombreTipo: tipo['name'] as String,
     );
   }
 }
@@ -79,17 +79,17 @@ class PokemonTypeDto {
 /// Es la estadística base de un Pokemon
 /// Todos los pokemones tienen 6, que son: hp, attack, defense, special-attack, special-defense y speed
 class PokemonStatDto {
-  final String name;
-  final int baseStat;
+  final String nombre;
+  final int valorBase;
 
-  const PokemonStatDto({required this.name, required this.baseStat});
+  const PokemonStatDto({required this.nombre, required this.valorBase});
 
   factory PokemonStatDto.fromJson(Map<String, dynamic> json) {
-    final stat = json['stat'] as Map<String, dynamic>;
+    final estadistica = json['stat'] as Map<String, dynamic>;
     return PokemonStatDto(
       // es el nombre de la estadistica enviado por la API
-      name: stat['name'] as String,
-      baseStat: json['base_stat'] as int, // valor de la estadistica
+      nombre: estadistica['name'] as String,
+      valorBase: json['base_stat'] as int, // valor de la estadistica
     );
   }
 }
@@ -97,23 +97,23 @@ class PokemonStatDto {
 /// Lo que devuelve la API al solicitar una pagina del catologo
 /// Tiene todos los pokemones de la pagina, ademas del total que tiene la API
 class PokemonPageDto {
-  final List<PokemonDto> pokemons;
-  final int totalCount;
+  final List<PokemonDto> pokemones;
+  final int total;
 
-  const PokemonPageDto({required this.pokemons, required this.totalCount});
+  const PokemonPageDto({required this.pokemones, required this.total});
 
   /// Convierte el JSON de la respuesta en un PokemonPageDto, con la lista de pokemon de
   /// la pagina y el total
   /// Si una lista no llega en el JSON, se usa una lista vacia, para que la app no falle
   factory PokemonPageDto.fromJson(Map<String, dynamic> data) {
-    final list = data['pokemon'] as List<dynamic>? ?? [];
+    final lista = data['pokemon'] as List<dynamic>? ?? [];
     final aggregate = data['pokemon_aggregate']?['aggregate'];
     return PokemonPageDto(
-      pokemons: list
+      pokemones: lista
           .map((p) => PokemonDto.fromJson(p as Map<String, dynamic>))
           .toList(),
       // si la API no manda el total, se usa 0 en vez de fallar
-      totalCount: aggregate?['count'] as int? ?? 0,
+      total: aggregate?['count'] as int? ?? 0,
     );
   }
 }
