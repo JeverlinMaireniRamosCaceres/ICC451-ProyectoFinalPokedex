@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../../core/errors/failure.dart';
+import '../../dtos/pokemon_detail_dto.dart';
 import '../../dtos/pokemon_dto.dart';
 import 'pokemon_queries.dart';
-import '../../dtos/pokemon_detail_dto.dart';
 
 /// Realiza las peticiones hacia la API GraphQL de PokeAPI
 /// Las respuestas son convertidas en DTOs
@@ -13,8 +14,8 @@ class PokemonRemoteDataSource {
   final Dio _dio;
 
   PokemonRemoteDataSource({Dio? dio})
-    : _dio =
-          dio ??
+      : _dio =
+      dio ??
           Dio(
             BaseOptions(
               // Es el tiempo máximo de espera para conectar y para recibir la respuesta
@@ -50,7 +51,7 @@ class PokemonRemoteDataSource {
     // la API devuelve una lista, con un solo Pokemon si el id existe
     final lista = datos['pokemon'] as List<dynamic>? ?? [];
     if (lista.isEmpty) {
-      throw PokemonApiException('No se encontró el Pokémon $id');
+      throw const GraphQLFailure('No se encontró el Pokémon');
     }
     return PokemonDetailDto.fromJson(lista.first as Map<String, dynamic>);
   }
@@ -68,26 +69,32 @@ class PokemonRemoteDataSource {
     // en GraphQL todas las peticiones van a la misma url
     // y la consulta va en el cuerpo de la peticion,
     // por eso se usa POST junto con las variables
-    final respuesta = await _dio.post<Map<String, dynamic>>(
-      _endpoint,
-      data: {'query': query, 'variables': variables},
-    );
+    final Response<Map<String, dynamic>> respuesta;
+    try {
+      respuesta = await _dio.post<Map<String, dynamic>>(
+        _endpoint,
+        data: {'query': query, 'variables': variables},
+      );
+    } on DioException catch (e) {
+      throw _convertirError(e);
+    }
 
     final cuerpo = respuesta.data;
     if (cuerpo == null) {
-      throw const PokemonApiException('La API devolvió una respuesta vacía');
+      throw const GraphQLFailure();
     }
 
     final datos = cuerpo['data'] as Map<String, dynamic>?;
     final errores = cuerpo['errors'] as List<dynamic>?;
 
     // Si la API no devolvio datos, la peticion falla
-    // Se muestra un error
+    // El mensaje tecnico de la API se imprime y al usuario le llega uno en español
     if (datos == null) {
       final mensaje = errores != null && errores.isNotEmpty
           ? (errores.first as Map<String, dynamic>)['message'] as String?
           : null;
-      throw PokemonApiException(mensaje ?? 'La API no devolvió datos');
+      debugPrint('[GraphQL] Error $mensaje');
+      throw const GraphQLFailure();
     }
 
     // GraphQL puede devolver "data" y "errors" a la vez, que son errores parciales
@@ -99,14 +106,18 @@ class PokemonRemoteDataSource {
 
     return datos;
   }
-}
 
-/// Error que se lanza cuando la API responde pero no devuelve datos validos
-class PokemonApiException implements Exception {
-  final String mensaje;
-
-  const PokemonApiException(this.mensaje);
-
-  @override
-  String toString() => 'PokemonApiException $mensaje';
+  /// Convierte el error de Dio en un Failure con un mensaje para el usuario
+  Failure _convertirError(DioException e) {
+    return switch (e.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.sendTimeout ||
+      DioExceptionType.receiveTimeout => const TimeoutFailure(),
+      DioExceptionType.connectionError => const NetworkFailure(),
+      DioExceptionType.badResponse when e.response?.statusCode == 429 =>
+      const RateLimitFailure(),
+      DioExceptionType.badResponse => const GraphQLFailure(),
+      _ => const UnknownFailure(),
+    };
+  }
 }
