@@ -49,3 +49,41 @@ query CatalogoPokemon($limit: Int!, $offset: Int!) {
   }
 }
 ''';
+
+// Query del detalle de un Pokemon
+// Se pide por id
+// No pide el nombre, estadisticas ni tipos porque ya se guardaron en el catalogo
+const String detallePokemonQuery = r'''
+query DetallePokemon($id: Int!) {
+  pokemon(where: { id: { _eq: $id } }) {
+    id
+    height
+    weight
+    pokemonsprites {
+      shiny: sprites(path: "front_shiny")
+      artworkShiny: sprites(path: "other.official-artwork.front_shiny")
+    }
+    pokemonabilities(order_by: { slot: asc }) {
+      is_hidden
+      ability { name }
+    }
+    pokemonmoves(distinct_on: move_id, order_by: { move_id: asc }) {
+      move { name }
+    }
+    pokemonspecy {
+      pokemons(order_by: { id: asc }) {
+        id
+        name
+        is_default
+      }
+      evolutionchain {
+        pokemonspecies(order_by: { id: asc }) {
+          id
+          name
+          evolves_from_species_id
+        }
+      }
+    }
+  }
+}
+''';
