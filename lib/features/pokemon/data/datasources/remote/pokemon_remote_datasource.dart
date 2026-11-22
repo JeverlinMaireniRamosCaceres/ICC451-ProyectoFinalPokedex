@@ -24,13 +24,13 @@ class PokemonRemoteDataSource {
           );
 
   /// Solicita una pagina del catalogo
-  /// [limit] indica cuantos pokemones se pueden traer
+  /// [limite] indica cuantos pokemones se pueden traer
   /// [offset] indica desde cuál pokemon se empieza
-  Future<PokemonPageDto> fetchPokemonPage({
-    required int limit,
+  Future<PokemonPageDto> obtenerPaginaPokemon({
+    required int limite,
     required int offset,
   }) async {
-    final variables = {'limit': limit, 'offset': offset};
+    final variables = {'limit': limite, 'offset': offset};
 
     // Se imprime la consulta para poder visualizarla
     debugPrint('[GraphQL] CatalogoPokemon $variables');
@@ -38,45 +38,45 @@ class PokemonRemoteDataSource {
     // en GraphQL todas las peticiones van a la misma url
     // y la consulta va en el cuerpo de la peticion,
     // por eso se usa POST junto con las variables
-    final response = await _dio.post<Map<String, dynamic>>(
+    final respuesta = await _dio.post<Map<String, dynamic>>(
       _endpoint,
       data: {'query': catalogoPokemonQuery, 'variables': variables},
     );
 
-    final body = response.data;
-    if (body == null) {
+    final cuerpo = respuesta.data;
+    if (cuerpo == null) {
       throw const PokemonApiException('La API devolvió una respuesta vacía');
     }
 
-    final data = body['data'] as Map<String, dynamic>?;
-    final errors = body['errors'] as List<dynamic>?;
+    final datos = cuerpo['data'] as Map<String, dynamic>?;
+    final errores = cuerpo['errors'] as List<dynamic>?;
 
     // Si la API no devolvio datos, la peticion falla
     // Se muestra un error
-    if (data == null) {
-      final message = errors != null && errors.isNotEmpty
-          ? (errors.first as Map<String, dynamic>)['message'] as String?
+    if (datos == null) {
+      final mensaje = errores != null && errores.isNotEmpty
+          ? (errores.first as Map<String, dynamic>)['message'] as String?
           : null;
-      throw PokemonApiException(message ?? 'La API no devolvió datos');
+      throw PokemonApiException(mensaje ?? 'La API no devolvió datos');
     }
 
     // GraphQL puede devolver "data" y "errors" a la vez, que son errores parciales
     // Sucede cuando una parte de la consulta falla y el resto si funciono
     // En ese caso se imprimen los errores y se usan los datos que si llegaron
-    if (errors != null && errors.isNotEmpty) {
-      debugPrint('[GraphQL] Errores parciales $errors');
+    if (errores != null && errores.isNotEmpty) {
+      debugPrint('[GraphQL] Errores parciales $errores');
     }
 
-    return PokemonPageDto.fromJson(data);
+    return PokemonPageDto.fromJson(datos);
   }
 }
 
 /// Error que se lanza cuando la API responde pero no devuelve datos validos
 class PokemonApiException implements Exception {
-  final String message;
+  final String mensaje;
 
-  const PokemonApiException(this.message);
+  const PokemonApiException(this.mensaje);
 
   @override
-  String toString() => 'PokemonApiException $message';
+  String toString() => 'PokemonApiException $mensaje';
 }

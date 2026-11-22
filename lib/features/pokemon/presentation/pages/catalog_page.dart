@@ -8,7 +8,7 @@ import '../widgets/pokemon_card.dart';
 import '../../../../core/network/connectivity_monitor.dart';
 import '../../../../core/widgets/connectivity_indicator.dart';
 
-// Pantalla del catálogo, solo dibuja según el estado que recibe (RF-CAT-04)
+// Pantalla del catálogo, solo dibuja según el estado que recibe
 class CatalogPage extends StatelessWidget {
   const CatalogPage({
     super.key,
@@ -90,12 +90,12 @@ class _PokemonGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // La altura crece con el texto del sistema para que no se corte (RNF-ACC-04)
+    // La altura crece con el texto del sistema para que no se corte
     final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
 
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
-      // Se agregan columnas solas en pantallas anchas (RF-CAT-06)
+      // Se agregan columnas solas en pantallas anchas
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 220,
@@ -103,7 +103,7 @@ class _PokemonGrid extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisExtent: 196 + 90 * (scale - 1),
         ),
-        // Solo se construyen las tarjetas visibles (RNF-REN-01)
+        // Solo se construyen las tarjetas visibles
         delegate: SliverChildBuilderDelegate(
               (_, i) => PokemonCard(pokemon: pokemons[i]),
           childCount: pokemons.length,

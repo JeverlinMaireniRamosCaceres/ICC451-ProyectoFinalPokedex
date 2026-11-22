@@ -8,8 +8,8 @@ import '../sync/pokemon_sync_coordinator.dart';
 class PokemonRepositoryImpl implements PokemonRepository {
   PokemonRepositoryImpl({required this._local, required this._syncCoordinator});
 
-  final PokemonLocalDataSource _local;
-  final PokemonSyncCoordinator _syncCoordinator;
+  final PokemonLocalDataSource _local; // para leer la base de datos local
+  final PokemonSyncCoordinator _syncCoordinator; // para hacer la sincronizacion con la API
 
   @override
   Stream<List<Pokemon>> watchCatalog() {
@@ -19,7 +19,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
   @override
   Stream<SyncState> watchSyncState() {
     return _local
-        .watchSyncMetadata(PokemonSyncCoordinator.resourceKey)
+        .watchSyncMetadata(PokemonSyncCoordinator.claveRecurso)
         .map((m) => _aSyncState(m?.status));
   }
 
@@ -34,8 +34,8 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
-  Future<void> refreshCatalog() => _syncCoordinator.refreshCatalog();
+  Future<void> refreshCatalog() => _syncCoordinator.actualizarCatalogo();
 
   @override
-  Future<void> fetchNextPage() => _syncCoordinator.fetchNextPage();
+  Future<void> fetchNextPage() => _syncCoordinator.obtenerSiguientePagina();
 }

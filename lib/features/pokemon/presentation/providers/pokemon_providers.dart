@@ -35,7 +35,7 @@ final pokemonSyncCoordinatorProvider = Provider<PokemonSyncCoordinator>((ref) {
     ref.watch(pokemonRemoteDataSourceProvider),
     ref.watch(pokemonLocalDataSourceProvider),
     ref.watch(appDatabaseProvider),
-    onSyncingChanged: ref.watch(connectivityMonitorProvider).setSyncing,
+    alCambiarSincronizando: ref.watch(connectivityMonitorProvider).cambiarSincronizando,
   );
 });
 
@@ -85,7 +85,7 @@ final catalogStateProvider = Provider<CatalogState>((ref) {
 final connectivityMonitorProvider = Provider<ConnectivityMonitor>((ref) {
   final monitor = ConnectivityMonitor();
 
-  monitor.start();
+  monitor.iniciar();
 
   ref.onDispose(monitor.dispose);
 

@@ -16,23 +16,23 @@ class ConnectivityMonitor {
 
   // Se define el periodo en el que se vuelve a comprobar la API aunque la red no cambie
   // No es muy frecuente por el límite de peticiones de la API
-  static const Duration _periodicCheck = Duration(minutes: 2);
+  static const Duration _revisionPeriodica = Duration(minutes: 2);
 
-  final Connectivity _connectivity;
+  final Connectivity _conectividad;
   final Dio _dio;
 
-  final _controller = StreamController<ConnectivityStatus>.broadcast();
-  StreamSubscription<List<ConnectivityResult>>? _subscription;
-  Timer? _debounceTimer;
-  Timer? _periodicTimer;
+  final _controlador = StreamController<ConnectivityStatus>.broadcast();
+  StreamSubscription<List<ConnectivityResult>>? _suscripcion;
+  Timer? _temporizadorDebounce;
+  Timer? _temporizadorPeriodico;
 
   // Es null hasta que se hace la primera comprobacion
-  ConnectivityStatus? _baseStatus;
-  bool _isSyncing = false;
-  ConnectivityStatus? _current;
+  ConnectivityStatus? _estadoBase;
+  bool _estaSincronizando = false;
+  ConnectivityStatus? _actual;
 
-  ConnectivityMonitor({Connectivity? connectivity, Dio? dio})
-      : _connectivity = connectivity ?? Connectivity(),
+  ConnectivityMonitor({Connectivity? conectividad, Dio? dio})
+      : _conectividad = conectividad ?? Connectivity(),
         _dio = dio ??
             Dio(
               BaseOptions(
@@ -43,96 +43,96 @@ class ConnectivityMonitor {
             );
 
   /// es el stream que lanza el estado cada vez que cambia
-  Stream<ConnectivityStatus> get statusStream => _controller.stream;
+  Stream<ConnectivityStatus> get flujoEstado => _controlador.stream;
 
   /// Es el estado actual, para consultarlo sin escuchar el stream
-  ConnectivityStatus get currentStatus =>
-      _current ?? ConnectivityStatus.offline;
+  ConnectivityStatus get estadoActual =>
+      _actual ?? ConnectivityStatus.sinConexion;
 
   /// Comienza a vigilar la conexion
   /// Se llama cuando inicia la app
-  Future<void> start() async {
-    _subscription = _connectivity.onConnectivityChanged.listen((_) {
+  Future<void> iniciar() async {
+    _suscripcion = _conectividad.onConnectivityChanged.listen((_) {
       // si la red cambia varias veces continuas, solo se considera la ultima
-      _debounceTimer?.cancel();
-      _debounceTimer = Timer(_debounce, checkNow);
+      _temporizadorDebounce?.cancel();
+      _temporizadorDebounce = Timer(_debounce, revisarAhora);
     });
 
-    _periodicTimer = Timer.periodic(_periodicCheck, (_) => checkNow());
+    _temporizadorPeriodico = Timer.periodic(_revisionPeriodica, (_) => revisarAhora());
 
-    await checkNow();
+    await revisarAhora();
   }
 
   /// Verifica en el momento la red y la API
-  Future<void> checkNow() async {
-    final results = await _connectivity.checkConnectivity();
-    final hasNetwork = results.any((r) => r != ConnectivityResult.none);
+  Future<void> revisarAhora() async {
+    final resultados = await _conectividad.checkConnectivity();
+    final hayRed = resultados.any((r) => r != ConnectivityResult.none);
 
-    if (!hasNetwork) {
-      _setBaseStatus(ConnectivityStatus.offline);
+    if (!hayRed) {
+      _cambiarEstadoBase(ConnectivityStatus.sinConexion);
       return;
     }
 
-    var apiAvailable = await _pingApi();
+    var apiDisponible = await _hacerPing();
     // Si falla, se confirma con otro intento
-    if (!apiAvailable) apiAvailable = await _pingApi();
-    _setBaseStatus(
-      apiAvailable
-          ? ConnectivityStatus.online
-          : ConnectivityStatus.serviceUnavailable,
+    if (!apiDisponible) apiDisponible = await _hacerPing();
+    _cambiarEstadoBase(
+      apiDisponible
+          ? ConnectivityStatus.conectado
+          : ConnectivityStatus.servicioNoDisponible,
     );
   }
 
   /// El coordinador llama este metodo cuando empieza a descargar y coloca el estado en true
   /// Cuando termina la descarga lo coloca en false
   /// De esta forma el indicador muestra sincronizando cuando se esta descargando
-  void setSyncing(bool value) {
-    _isSyncing = value;
-    _emit();
+  void cambiarSincronizando(bool valor) {
+    _estaSincronizando = valor;
+    _emitir();
   }
 
   /// Envia la consulta GraphQL más pequeña posible para saber si la API responde
-  Future<bool> _pingApi() async {
+  Future<bool> _hacerPing() async {
     try {
-      final response = await _dio.post<Map<String, dynamic>>(
+      final respuesta = await _dio.post<Map<String, dynamic>>(
         _endpoint,
         data: {'query': '{ __typename }'},
       );
-      return response.statusCode == 200 && response.data?['data'] != null;
+      return respuesta.statusCode == 200 && respuesta.data?['data'] != null;
     } catch (e) {
       debugPrint('[Conectividad] La API no respondió $e');
       return false;
     }
   }
 
-  void _setBaseStatus(ConnectivityStatus status) {
-    _baseStatus = status;
-    _emit();
+  void _cambiarEstadoBase(ConnectivityStatus estado) {
+    _estadoBase = estado;
+    _emitir();
   }
 
   /// Calcula el estado final y lo emite solo si cambio
-  void _emit() {
-    final base = _baseStatus;
+  void _emitir() {
+    final base = _estadoBase;
 
     // no se ha hecho la comprobacion, no muestra nada
     if (base == null) return;
 
-    final next = base == ConnectivityStatus.online && _isSyncing
-        ? ConnectivityStatus.syncing
+    final siguiente = base == ConnectivityStatus.conectado && _estaSincronizando
+        ? ConnectivityStatus.sincronizando
         : base;
 
-    if (next == _current) return;
+    if (siguiente == _actual) return;
 
-    _current = next;
-    debugPrint('[Conectividad] Estado $next');
-    _controller.add(next);
+    _actual = siguiente;
+    debugPrint('[Conectividad] Estado $siguiente');
+    _controlador.add(siguiente);
   }
 
   /// Libera los recursos al cerrar la app
   Future<void> dispose() async {
-    _debounceTimer?.cancel();
-    _periodicTimer?.cancel();
-    await _subscription?.cancel();
-    await _controller.close();
+    _temporizadorDebounce?.cancel();
+    _temporizadorPeriodico?.cancel();
+    await _suscripcion?.cancel();
+    await _controlador.close();
   }
 }

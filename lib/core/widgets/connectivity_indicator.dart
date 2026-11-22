@@ -20,41 +20,41 @@ class ConnectivityIndicator extends StatelessWidget {
     // el indicador cada vez que llega un estado nuevo
     // initialData muestra el estado actual mientras llega el primero
     return StreamBuilder<ConnectivityStatus>(
-      stream: monitor.statusStream,
-      initialData: monitor.currentStatus,
+      stream: monitor.flujoEstado,
+      initialData: monitor.estadoActual,
       builder: (context, snapshot) {
-        final status = snapshot.data ?? ConnectivityStatus.offline;
+        final estado = snapshot.data ?? ConnectivityStatus.sinConexion;
 
-        late final String message;
-        late final IconData icon;
+        late final String mensaje;
+        late final IconData icono;
         late final Color color;
 
         // Cada estado tiene un texto, un color y un icono, para que se entienda mejor
         // y no dependa solo del color
-        switch (status) {
-          case ConnectivityStatus.online:
-            message = 'Conectado';
-            icon = Icons.wifi;
+        switch (estado) {
+          case ConnectivityStatus.conectado:
+            mensaje = 'Conectado';
+            icono = Icons.wifi;
             color = Colors.green.shade800;
 
-          case ConnectivityStatus.offline:
-            message = 'Sin conexión';
-            icon = Icons.wifi_off;
+          case ConnectivityStatus.sinConexion:
+            mensaje = 'Sin conexión';
+            icono = Icons.wifi_off;
             color = Colors.red.shade800;
 
-          case ConnectivityStatus.serviceUnavailable:
-            message = 'Servicio no disponible';
-            icon = Icons.cloud_off;
+          case ConnectivityStatus.servicioNoDisponible:
+            mensaje = 'Servicio no disponible';
+            icono = Icons.cloud_off;
             color = Colors.orange.shade900;
 
-          case ConnectivityStatus.syncing:
-            message = 'Sincronizando';
-            icon = Icons.sync;
+          case ConnectivityStatus.sincronizando:
+            mensaje = 'Sincronizando';
+            icono = Icons.sync;
             color = Colors.blue.shade800;
         }
 
         return Semantics(
-          label: 'Estado de conexión: $message',
+          label: 'Estado de conexión: $mensaje',
           // El lector de pantalla lee el cambio de estado sin que el usuario toque nada
           liveRegion: true,
           // Evita que el lector de pantalla lea también el texto de adentro
@@ -63,13 +63,13 @@ class ConnectivityIndicator extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                icon,
+                icono,
                 color: color,
                 size: 18,
               ),
               const SizedBox(width: 6),
               Text(
-                message,
+                mensaje,
                 style: TextStyle(
                   color: color,
                   fontSize: 12,
