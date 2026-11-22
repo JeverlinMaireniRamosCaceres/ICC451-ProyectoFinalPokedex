@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/pokemon_providers.dart';
 import 'catalog_page.dart';
+import '../../../../core/errors/failure.dart';
 
 // Es el unico punto donde el catalogo se conecta con Riverpod
 // Lee el estado y las acciones de los providers y se los pasa a CatalogPage, que se encarga de mostrarlo
@@ -12,11 +13,16 @@ class CatalogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Pide la pagina que sigue
-    // Si falla, el error queda en consola
-    // y el estado error queda guardado en SyncMetadata
+    // Si falla, muestra abajo el mensaje del error
+    // Los Pokemon que ya estan en la base se siguen viendo
     void cargarMas() {
       ref.read(pokemonRepositoryProvider).obtenerSiguientePagina().catchError((Object e) {
         debugPrint('No se pudo cargar más $e');
+        if (!context.mounted) return;
+        final mensaje = e is Failure ? e.mensaje : 'No se pudo cargar más';
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(mensaje)));
       });
     }
 
