@@ -7,6 +7,7 @@ import '../../../../core/database/app_database.dart';
 import '../datasources/local/pokemon_local_datasource.dart';
 import '../datasources/remote/pokemon_remote_datasource.dart';
 import '../mappers/pokemon_dto_mapper.dart';
+import '../dtos/pokemon_dto.dart';
 
 /// Son los cuatro valores posibles de la columna de estado para la sincronizacion
 abstract final class SyncStatus {
@@ -88,10 +89,8 @@ class PokemonSyncCoordinator {
     _alCambiarSincronizando?.call(true);
 
     try {
-      final pagina = await _remoto.obtenerPaginaPokemon(
-        limite: tamanoPagina,
-        offset: offset,
-      );
+      final pagina = await _obtenerConReintentos(offset);
+
       final pokemones = pagina.aEntidades();
 
       // El avance nunca retrocede, aunque se vuelva a pedir la primera página
@@ -135,6 +134,24 @@ class PokemonSyncCoordinator {
       _alCambiarSincronizando?.call(false);
     }
 
+  }
+
+  // Se intenta pedir la pagina hasta 3 veces
+  // Entre cada intento espera 2 elevado al numero de intento, 1 y luego 2 segundos
+  // Si el tercero tambien falla, se lanza el error
+  Future<PokemonPageDto> _obtenerConReintentos(int offset) async {
+    for (var intento = 0; ; intento++) {
+      try {
+        return await _remoto.obtenerPaginaPokemon(
+          limite: tamanoPagina,
+          offset: offset,
+        );
+      } catch (e) {
+        if (intento == 2) rethrow;
+        debugPrint('[Sync] Fallo el intento ${intento + 1}, reintentando');
+        await Future.delayed(Duration(seconds: pow(2, intento).toInt()));
+      }
+    }
   }
 
   Future<SyncMetadataData?> _leerMetadatos() {
