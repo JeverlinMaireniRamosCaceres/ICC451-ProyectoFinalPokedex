@@ -23,7 +23,7 @@ class CatalogEmpty extends CatalogState {
 
 // Algo falló, se guarda el Failure para mostrar su mensaje
 class CatalogError extends CatalogState {
-  const CatalogError(this.failure);
+  const CatalogError(this.fallo);
 
-  final Failure failure;
+  final Failure fallo;
 }

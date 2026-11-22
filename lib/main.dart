@@ -16,7 +16,7 @@ void main() {
   unawaited(
     container
         .read(pokemonRepositoryProvider)
-        .refreshCatalog()
+        .actualizarCatalogo()
         .catchError((error) {
       debugPrint('Error al sincronizar el catálogo: $error');
     }),

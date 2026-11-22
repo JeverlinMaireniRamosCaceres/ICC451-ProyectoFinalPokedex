@@ -12,15 +12,15 @@ import '../../../../core/widgets/connectivity_indicator.dart';
 class CatalogPage extends StatelessWidget {
   const CatalogPage({
     super.key,
-    required this.state,
-    required this.onRetry,
-    required this.onLoadMore,
+    required this.estado,
+    required this.alReintentar,
+    required this.alCargarMas,
     required this.monitor,
   });
 
-  final CatalogState state;
-  final VoidCallback onRetry;
-  final VoidCallback onLoadMore;
+  final CatalogState estado;
+  final VoidCallback alReintentar;
+  final VoidCallback alCargarMas;
   final ConnectivityMonitor monitor;
 
   @override
@@ -29,9 +29,9 @@ class CatalogPage extends StatelessWidget {
       // Se avisa cuando el usuario se acerca al final, solo si hay lista
       body: NotificationListener<ScrollNotification>(
         onNotification: (n) {
-          if (state is CatalogSuccess &&
+          if (estado is CatalogSuccess &&
               n.metrics.pixels >= n.metrics.maxScrollExtent - 300) {
-            onLoadMore();
+            alCargarMas();
           }
           return false;
         },
@@ -50,7 +50,7 @@ class CatalogPage extends StatelessWidget {
         ],
       ),
             // El switch es exhaustivo porque CatalogState es sealed
-            switch (state) {
+            switch (estado) {
               CatalogLoading() => const SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(
@@ -62,15 +62,15 @@ class CatalogPage extends StatelessWidget {
               CatalogEmpty() => SliverFillRemaining(
                 hasScrollBody: false,
                 child: EmptyState(
-                  message:
+                  mensaje:
                   'Todavía no hay Pokémon guardados. Conéctate a internet para descargar el catálogo.',
-                  actionLabel: 'Actualizar',
-                  onAction: onRetry,
+                  textoAccion: 'Actualizar',
+                  alAccionar: alReintentar,
                 ),
               ),
-              CatalogError(:final failure) => SliverFillRemaining(
+              CatalogError(fallo:final failure) => SliverFillRemaining(
                 hasScrollBody: false,
-                child: ErrorState(message: failure.message, onRetry: onRetry),
+                child: ErrorState(mensaje: failure.mensaje, alReintentar: alReintentar),
               ),
               CatalogSuccess(:final pokemons) => _PokemonGrid(
                 pokemons: pokemons,
@@ -91,7 +91,7 @@ class _PokemonGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // La altura crece con el texto del sistema para que no se corte
-    final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    final escala = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
 
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
@@ -101,7 +101,7 @@ class _PokemonGrid extends StatelessWidget {
           maxCrossAxisExtent: 220,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          mainAxisExtent: 196 + 90 * (scale - 1),
+          mainAxisExtent: 196 + 90 * (escala - 1),
         ),
         // Solo se construyen las tarjetas visibles
         delegate: SliverChildBuilderDelegate(

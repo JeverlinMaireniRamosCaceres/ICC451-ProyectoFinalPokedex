@@ -7,50 +7,50 @@ import 'type_colors.dart';
 // Tarjeta de cada pokemon en el catalogo
 // el fondo usa el color de su tipo principal
 class PokemonCard extends StatelessWidget {
-  const PokemonCard({super.key, required this.pokemon, this.onTap});
+  const PokemonCard({super.key, required this.pokemon, this.alTocar});
 
   final Pokemon pokemon;
-  final VoidCallback? onTap;
+  final VoidCallback? alTocar;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final colores = Theme.of(context).colorScheme;
+    final temaTexto = Theme.of(context).textTheme;
 
-    final name = _capitalize(pokemon.name);
-    final number = '#${pokemon.nationalDexNumber.toString().padLeft(4, '0')}';
-    final typeNames = pokemon.types.map((t) => _capitalize(t.name)).toList();
+    final nombre = _capitalizar(pokemon.name);
+    final numero = '#${pokemon.nationalDexNumber.toString().padLeft(4, '0')}';
+    final nombresTipos = pokemon.types.map((t) => _capitalizar(t.name)).toList();
 
     // El color del tipo se pone claro para que el texto se lea bien
-    final mainColor = pokemon.types.isEmpty
-        ? colors.outline
-        : typeColor(pokemon.types.first.name);
-    final background = Color.alphaBlend(
-      mainColor.withValues(alpha: 0.2),
-      colors.surface,
+    final colorPrincipal = pokemon.types.isEmpty
+        ? colores.outline
+        : colorDeTipo(pokemon.types.first.name);
+    final fondo = Color.alphaBlend(
+      colorPrincipal.withValues(alpha: 0.2),
+      colores.surface,
     );
 
     // El lector de pantalla lee toda la tarjeta en una sola frase
     return Semantics(
-      button: onTap != null,
-      label: '$name, número $number, tipos: ${typeNames.join(', ')}',
+      button: alTocar != null,
+      label: '$nombre, número $numero, tipos: ${nombresTipos.join(', ')}',
       excludeSemantics: true,
       child: Material(
-        color: background,
+        color: fondo,
         borderRadius: BorderRadius.circular(20),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
+          onTap: alTocar,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  number,
-                  style: textTheme.labelLarge?.copyWith(
+                  numero,
+                  style: temaTexto.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: colors.onSurfaceVariant,
+                    color: colores.onSurfaceVariant,
                   ),
                 ),
                 // La imagen ocupa el espacio que sobra, es lo más grande
@@ -64,10 +64,10 @@ class PokemonCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  name,
+                  nombre,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleMedium?.copyWith(
+                  style: temaTexto.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -75,10 +75,10 @@ class PokemonCard extends StatelessWidget {
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: typeNames.indexed.map((e) {
+                  children: nombresTipos.indexed.map((e) {
                     return _TypeChip(
-                      label: e.$2,
-                      color: typeColor(pokemon.types[e.$1].name),
+                      etiqueta: e.$2,
+                      color: colorDeTipo(pokemon.types[e.$1].name),
                     );
                   }).toList(),
                 ),
@@ -93,9 +93,9 @@ class PokemonCard extends StatelessWidget {
 
 // Etiqueta del tipo con texto y un punto de color
 class _TypeChip extends StatelessWidget {
-  const _TypeChip({required this.label, required this.color});
+  const _TypeChip({required this.etiqueta, required this.color});
 
-  final String label;
+  final String etiqueta;
   final Color color;
 
   @override
@@ -118,7 +118,7 @@ class _TypeChip extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            label,
+            etiqueta,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: colors.onSurface,
@@ -131,6 +131,6 @@ class _TypeChip extends StatelessWidget {
 }
 
 // La API manda los nombres en minúscula
-String _capitalize(String s) {
+String _capitalizar(String s) {
   return s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 }
