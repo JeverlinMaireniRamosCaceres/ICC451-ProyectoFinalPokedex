@@ -9,6 +9,8 @@ import '../datasources/remote/pokemon_remote_datasource.dart';
 import '../mappers/pokemon_dto_mapper.dart';
 import '../dtos/pokemon_dto.dart';
 
+import '../../../../core/errors/failure.dart';
+
 /// Son los cuatro valores posibles de la columna de estado para la sincronizacion
 abstract final class SyncStatus {
 
@@ -43,6 +45,9 @@ class PokemonSyncCoordinator {
 
   // Avisa cuando empieza y termina una sincronización, para el indicador
   final void Function(bool sincronizando)? _alCambiarSincronizando;
+
+  // El ultimo error de sincronizacion, para mostrar su mensaje en pantalla
+  Failure? ultimoError;
 
   PokemonSyncCoordinator(
       this._remoto,
@@ -125,6 +130,8 @@ class PokemonSyncCoordinator {
     } catch (e) {
       debugPrint('[Sync] Error en offset $offset $e');
       await _guardarEstado(SyncStatus.error);
+
+      ultimoError = e is Failure ? e : const UnknownFailure();
 
       // Se vuelve a lanzar el error para que la pantalla sepa que fallo
       // El marcador no se movio, por lo que al reintentar se pide la misma pagina

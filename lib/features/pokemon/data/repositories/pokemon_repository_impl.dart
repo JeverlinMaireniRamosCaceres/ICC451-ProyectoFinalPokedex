@@ -3,6 +3,7 @@ import '../../domain/repositories/pokemon_repository.dart';
 import '../datasources/local/pokemon_local_datasource.dart';
 import '../mappers/pokemon_row_mapper.dart';
 import '../sync/pokemon_sync_coordinator.dart';
+import '../../../../core/errors/failure.dart';
 
 // Une la base local y la API, la interfaz solo habla con esta clase
 class PokemonRepositoryImpl implements PokemonRepository {
@@ -38,4 +39,8 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   @override
   Future<void> obtenerSiguientePagina() => _coordinadorSincronizacion.obtenerSiguientePagina();
+
+  @override
+  Failure? get ultimoError => _coordinadorSincronizacion.ultimoError;
+
 }

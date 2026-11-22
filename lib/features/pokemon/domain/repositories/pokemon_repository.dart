@@ -1,4 +1,5 @@
 import '../entities/pokemon.dart';
+import '../../../../core/errors/failure.dart';
 
 // Estado de la sincronización del catálogo, lo que la pantalla necesita saber
 enum SyncState {
@@ -21,4 +22,7 @@ abstract class PokemonRepository {
   Future<void> actualizarCatalogo();
 
   Future<void> obtenerSiguientePagina();
+
+  // Ultimo error de sincronizacion, null si no ha fallado
+  Failure? get ultimoError;
 }

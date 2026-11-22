@@ -68,10 +68,8 @@ final catalogStateProvider = Provider<CatalogState>((ref) {
     // Sin datos, el estado del sync decide qué se le explica al usuario
     AsyncData() => switch (sincronizacion) {
       SyncState.inactivo || SyncState.sincronizando => const CatalogLoading(),
-      SyncState.error => const CatalogError(
-        UnknownFailure(
-          'No se pudo descargar el catálogo. Revisa tu conexión e intenta de nuevo.',
-        ),
+      SyncState.error => CatalogError(
+        ref.read(pokemonRepositoryProvider).ultimoError ?? const UnknownFailure(),
       ),
       SyncState.completo => const CatalogEmpty(),
     },
