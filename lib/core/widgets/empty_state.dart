@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
-    required this.message,
-    this.icon = Icons.inbox_outlined,
-    this.actionLabel,
-    this.onAction,
+    required this.mensaje,
+    this.icono = Icons.inbox_outlined,
+    this.textoAccion,
+    this.alAccionar,
   });
 
-  final String message;
-  final IconData icon;
-  final String? actionLabel;
-  final VoidCallback? onAction;
+  final String mensaje;
+  final IconData icono;
+  final String? textoAccion;
+  final VoidCallback? alAccionar;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colores = Theme.of(context).colorScheme;
 
     // Scroll por si el texto del sistema está al 200%
     return Center(
@@ -26,17 +26,17 @@ class EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ExcludeSemantics(
-              child: Icon(icon, size: 64, color: colors.outline),
+              child: Icon(icono, size: 64, color: colores.outline),
             ),
             const SizedBox(height: 16),
             Text(
-              message,
+              mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            if (actionLabel != null && onAction != null) ...[
+            if (textoAccion != null && alAccionar != null) ...[
               const SizedBox(height: 16),
-              FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+              FilledButton(onPressed: alAccionar, child: Text(textoAccion!)),
             ],
           ],
         ),

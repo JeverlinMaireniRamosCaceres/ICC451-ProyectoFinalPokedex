@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Color de cada tipo, la API manda los nombres en minúscula
-const _typeColors = <String, Color>{
+const _coloresTipo = <String, Color>{
   'normal': Color(0xFFA8A77A),
   'fire': Color(0xFFEE8130),
   'water': Color(0xFF6390F0),
@@ -23,4 +23,4 @@ const _typeColors = <String, Color>{
 };
 
 // Si llega un tipo desconocido no se rompe, usa un gris
-Color typeColor(String name) => _typeColors[name] ?? Colors.blueGrey;
+Color colorDeTipo(String nombre) => _coloresTipo[nombre] ?? Colors.blueGrey;

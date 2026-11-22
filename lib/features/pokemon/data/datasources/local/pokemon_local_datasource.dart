@@ -19,7 +19,7 @@ class PokemonLocalDataSource {
   final AppDatabase _db;
 
   // Catálogo completo en un solo join, se actualiza solo cuando cambia la base
-  Stream<List<PokemonWithTypes>> watchCatalog() {
+  Stream<List<PokemonWithTypes>> observarCatalogo() {
     final query =
         _db.select(_db.pokemons).join([
           // trae el pokemon aunque no tenga tipos
@@ -60,7 +60,7 @@ class PokemonLocalDataSource {
   }
 
   // Estado de la sincronización de un recurso, null si nunca se ha sincronizado
-  Stream<SyncMetadataData?> watchSyncMetadata(String resourceKey) {
+  Stream<SyncMetadataData?> observarMetadatosSincronizacion(String resourceKey) {
     return (_db.select(
       _db.syncMetadata,
     )..where((m) => m.resourceKey.equals(resourceKey))).watchSingleOrNull();

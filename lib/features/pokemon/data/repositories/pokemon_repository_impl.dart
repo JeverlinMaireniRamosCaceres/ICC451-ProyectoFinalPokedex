@@ -6,36 +6,36 @@ import '../sync/pokemon_sync_coordinator.dart';
 
 // Une la base local y la API, la interfaz solo habla con esta clase
 class PokemonRepositoryImpl implements PokemonRepository {
-  PokemonRepositoryImpl({required this._local, required this._syncCoordinator});
+  PokemonRepositoryImpl({required this._local, required this._coordinadorSincronizacion});
 
   final PokemonLocalDataSource _local; // para leer la base de datos local
-  final PokemonSyncCoordinator _syncCoordinator; // para hacer la sincronizacion con la API
+  final PokemonSyncCoordinator _coordinadorSincronizacion; // para hacer la sincronizacion con la API
 
   @override
-  Stream<List<Pokemon>> watchCatalog() {
-    return _local.watchCatalog().map((filas) => filas.toEntities());
+  Stream<List<Pokemon>> observarCatalogo() {
+    return _local.observarCatalogo().map((filas) => filas.aEntidades());
   }
 
   @override
-  Stream<SyncState> watchSyncState() {
+  Stream<SyncState> observarEstadoSincronizacion() {
     return _local
-        .watchSyncMetadata(PokemonSyncCoordinator.claveRecurso)
+        .observarMetadatosSincronizacion(PokemonSyncCoordinator.claveRecurso)
         .map((m) => _aSyncState(m?.status));
   }
 
   // El string de la base se traduce al enum del dominio
-  SyncState _aSyncState(String? status) {
-    return switch (status) {
-      SyncStatus.syncing => SyncState.syncing,
-      SyncStatus.complete => SyncState.complete,
+  SyncState _aSyncState(String? estado) {
+    return switch (estado) {
+      SyncStatus.syncing => SyncState.sincronizando,
+      SyncStatus.complete => SyncState.completo,
       SyncStatus.error => SyncState.error,
-      _ => SyncState.idle,
+      _ => SyncState.inactivo,
     };
   }
 
   @override
-  Future<void> refreshCatalog() => _syncCoordinator.actualizarCatalogo();
+  Future<void> actualizarCatalogo() => _coordinadorSincronizacion.actualizarCatalogo();
 
   @override
-  Future<void> fetchNextPage() => _syncCoordinator.obtenerSiguientePagina();
+  Future<void> obtenerSiguientePagina() => _coordinadorSincronizacion.obtenerSiguientePagina();
 }

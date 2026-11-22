@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/pokemon_providers.dart';
 import 'catalog_page.dart';
 
-// Es el unico punto donde el catologo se conecta con Riverpod
+// Es el unico punto donde el catalogo se conecta con Riverpod
 // Lee el estado y las acciones de los providers y se los pasa a CatalogPage, que se encarga de mostrarlo
 class CatalogScreen extends ConsumerWidget {
   const CatalogScreen({super.key});
@@ -14,17 +14,17 @@ class CatalogScreen extends ConsumerWidget {
     // Pide la pagina que sigue
     // Si falla, el error queda en consola
     // y el estado error queda guardado en SyncMetadata
-    void loadMore() {
-      ref.read(pokemonRepositoryProvider).fetchNextPage().catchError((Object e) {
+    void cargarMas() {
+      ref.read(pokemonRepositoryProvider).obtenerSiguientePagina().catchError((Object e) {
         debugPrint('No se pudo cargar más $e');
       });
     }
 
     return CatalogPage(
       // hace que la pantalla se redibuje cuando cambia el estado del catalogo
-      state: ref.watch(catalogStateProvider),
-      onRetry: loadMore,
-      onLoadMore: loadMore,
+      estado: ref.watch(catalogStateProvider),
+      alReintentar: cargarMas,
+      alCargarMas: cargarMas,
       monitor: ref.watch(connectivityMonitorProvider),
     );
   }

@@ -5,12 +5,12 @@ import '../datasources/local/pokemon_local_datasource.dart';
 
 // Convierte lo que entrega la base local en las entidades que usa la app
 extension PokemonWithTypesMapper on PokemonWithTypes {
-  Pokemon toEntity() {
+  Pokemon aEntidad() {
     return Pokemon(
       id: pokemon.id,
       name: pokemon.name,
       nationalDexNumber: pokemon.nationalDexNumber,
-      types: types.map((t) => t.toEntity()).toList(),
+      types: types.map((t) => t.aEntidad()).toList(),
       imageUrl: pokemon.imageUrl,
       artworkUrl: pokemon.artworkUrl,
       generationId: pokemon.generationId,
@@ -20,14 +20,14 @@ extension PokemonWithTypesMapper on PokemonWithTypes {
 }
 
 extension TypeRowMapper on TypeRow {
-  PokemonType toEntity() {
+  PokemonType aEntidad() {
     return PokemonType(id: id, name: name);
   }
 }
 
-// Convierte la lista completa que entrega el watch catalog en entidades
+// Convierte la lista completa que entrega observarCatalogo en entidades
 extension PokemonWithTypesListMapper on List<PokemonWithTypes> {
-  List<Pokemon> toEntities() {
-    return map((p) => p.toEntity()).toList();
+  List<Pokemon> aEntidades() {
+    return map((p) => p.aEntidad()).toList();
   }
 }

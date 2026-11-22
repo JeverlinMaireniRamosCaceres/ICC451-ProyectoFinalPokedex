@@ -1,7 +1,7 @@
 sealed class Failure implements Exception {
-  const Failure(this.message);
+  const Failure(this.mensaje);
 
-  final String message;
+  final String mensaje;
 }
 
 class NetworkFailure extends Failure {
