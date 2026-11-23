@@ -1774,6 +1774,927 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
   }
 }
 
+class $PokemonDetailsTable extends PokemonDetails
+    with TableInfo<$PokemonDetailsTable, PokemonDetailRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PokemonDetailsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _pokemonIdMeta = const VerificationMeta(
+    'pokemonId',
+  );
+  @override
+  late final GeneratedColumn<int> pokemonId = GeneratedColumn<int>(
+    'pokemon_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _alturaMeta = const VerificationMeta('altura');
+  @override
+  late final GeneratedColumn<int> altura = GeneratedColumn<int>(
+    'altura',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pesoMeta = const VerificationMeta('peso');
+  @override
+  late final GeneratedColumn<int> peso = GeneratedColumn<int>(
+    'peso',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _spriteMeta = const VerificationMeta('sprite');
+  @override
+  late final GeneratedColumn<String> sprite = GeneratedColumn<String>(
+    'sprite',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _artworkMeta = const VerificationMeta(
+    'artwork',
+  );
+  @override
+  late final GeneratedColumn<String> artwork = GeneratedColumn<String>(
+    'artwork',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _spriteShinyMeta = const VerificationMeta(
+    'spriteShiny',
+  );
+  @override
+  late final GeneratedColumn<String> spriteShiny = GeneratedColumn<String>(
+    'sprite_shiny',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _artworkShinyMeta = const VerificationMeta(
+    'artworkShiny',
+  );
+  @override
+  late final GeneratedColumn<String> artworkShiny = GeneratedColumn<String>(
+    'artwork_shiny',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tiposMeta = const VerificationMeta('tipos');
+  @override
+  late final GeneratedColumn<String> tipos = GeneratedColumn<String>(
+    'tipos',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estadisticasMeta = const VerificationMeta(
+    'estadisticas',
+  );
+  @override
+  late final GeneratedColumn<String> estadisticas = GeneratedColumn<String>(
+    'estadisticas',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _habilidadesMeta = const VerificationMeta(
+    'habilidades',
+  );
+  @override
+  late final GeneratedColumn<String> habilidades = GeneratedColumn<String>(
+    'habilidades',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _movimientosMeta = const VerificationMeta(
+    'movimientos',
+  );
+  @override
+  late final GeneratedColumn<String> movimientos = GeneratedColumn<String>(
+    'movimientos',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gruposHuevoMeta = const VerificationMeta(
+    'gruposHuevo',
+  );
+  @override
+  late final GeneratedColumn<String> gruposHuevo = GeneratedColumn<String>(
+    'grupos_huevo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _formasMeta = const VerificationMeta('formas');
+  @override
+  late final GeneratedColumn<String> formas = GeneratedColumn<String>(
+    'formas',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _evolucionesMeta = const VerificationMeta(
+    'evoluciones',
+  );
+  @override
+  late final GeneratedColumn<String> evoluciones = GeneratedColumn<String>(
+    'evoluciones',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actualizadoEnMeta = const VerificationMeta(
+    'actualizadoEn',
+  );
+  @override
+  late final GeneratedColumn<DateTime> actualizadoEn =
+      GeneratedColumn<DateTime>(
+        'actualizado_en',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    pokemonId,
+    nombre,
+    altura,
+    peso,
+    sprite,
+    artwork,
+    spriteShiny,
+    artworkShiny,
+    tipos,
+    estadisticas,
+    habilidades,
+    movimientos,
+    gruposHuevo,
+    formas,
+    evoluciones,
+    actualizadoEn,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pokemon_details';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PokemonDetailRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('pokemon_id')) {
+      context.handle(
+        _pokemonIdMeta,
+        pokemonId.isAcceptableOrUnknown(data['pokemon_id']!, _pokemonIdMeta),
+      );
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nombreMeta);
+    }
+    if (data.containsKey('altura')) {
+      context.handle(
+        _alturaMeta,
+        altura.isAcceptableOrUnknown(data['altura']!, _alturaMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_alturaMeta);
+    }
+    if (data.containsKey('peso')) {
+      context.handle(
+        _pesoMeta,
+        peso.isAcceptableOrUnknown(data['peso']!, _pesoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pesoMeta);
+    }
+    if (data.containsKey('sprite')) {
+      context.handle(
+        _spriteMeta,
+        sprite.isAcceptableOrUnknown(data['sprite']!, _spriteMeta),
+      );
+    }
+    if (data.containsKey('artwork')) {
+      context.handle(
+        _artworkMeta,
+        artwork.isAcceptableOrUnknown(data['artwork']!, _artworkMeta),
+      );
+    }
+    if (data.containsKey('sprite_shiny')) {
+      context.handle(
+        _spriteShinyMeta,
+        spriteShiny.isAcceptableOrUnknown(
+          data['sprite_shiny']!,
+          _spriteShinyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('artwork_shiny')) {
+      context.handle(
+        _artworkShinyMeta,
+        artworkShiny.isAcceptableOrUnknown(
+          data['artwork_shiny']!,
+          _artworkShinyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tipos')) {
+      context.handle(
+        _tiposMeta,
+        tipos.isAcceptableOrUnknown(data['tipos']!, _tiposMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tiposMeta);
+    }
+    if (data.containsKey('estadisticas')) {
+      context.handle(
+        _estadisticasMeta,
+        estadisticas.isAcceptableOrUnknown(
+          data['estadisticas']!,
+          _estadisticasMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_estadisticasMeta);
+    }
+    if (data.containsKey('habilidades')) {
+      context.handle(
+        _habilidadesMeta,
+        habilidades.isAcceptableOrUnknown(
+          data['habilidades']!,
+          _habilidadesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_habilidadesMeta);
+    }
+    if (data.containsKey('movimientos')) {
+      context.handle(
+        _movimientosMeta,
+        movimientos.isAcceptableOrUnknown(
+          data['movimientos']!,
+          _movimientosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_movimientosMeta);
+    }
+    if (data.containsKey('grupos_huevo')) {
+      context.handle(
+        _gruposHuevoMeta,
+        gruposHuevo.isAcceptableOrUnknown(
+          data['grupos_huevo']!,
+          _gruposHuevoMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_gruposHuevoMeta);
+    }
+    if (data.containsKey('formas')) {
+      context.handle(
+        _formasMeta,
+        formas.isAcceptableOrUnknown(data['formas']!, _formasMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_formasMeta);
+    }
+    if (data.containsKey('evoluciones')) {
+      context.handle(
+        _evolucionesMeta,
+        evoluciones.isAcceptableOrUnknown(
+          data['evoluciones']!,
+          _evolucionesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_evolucionesMeta);
+    }
+    if (data.containsKey('actualizado_en')) {
+      context.handle(
+        _actualizadoEnMeta,
+        actualizadoEn.isAcceptableOrUnknown(
+          data['actualizado_en']!,
+          _actualizadoEnMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_actualizadoEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {pokemonId};
+  @override
+  PokemonDetailRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PokemonDetailRow(
+      pokemonId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pokemon_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      altura: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}altura'],
+      )!,
+      peso: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}peso'],
+      )!,
+      sprite: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sprite'],
+      ),
+      artwork: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}artwork'],
+      ),
+      spriteShiny: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sprite_shiny'],
+      ),
+      artworkShiny: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}artwork_shiny'],
+      ),
+      tipos: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipos'],
+      )!,
+      estadisticas: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estadisticas'],
+      )!,
+      habilidades: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}habilidades'],
+      )!,
+      movimientos: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}movimientos'],
+      )!,
+      gruposHuevo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}grupos_huevo'],
+      )!,
+      formas: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}formas'],
+      )!,
+      evoluciones: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evoluciones'],
+      )!,
+      actualizadoEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}actualizado_en'],
+      )!,
+    );
+  }
+
+  @override
+  $PokemonDetailsTable createAlias(String alias) {
+    return $PokemonDetailsTable(attachedDatabase, alias);
+  }
+}
+
+class PokemonDetailRow extends DataClass
+    implements Insertable<PokemonDetailRow> {
+  final int pokemonId;
+  final String nombre;
+  final int altura;
+  final int peso;
+  final String? sprite;
+  final String? artwork;
+  final String? spriteShiny;
+  final String? artworkShiny;
+  final String tipos;
+  final String estadisticas;
+  final String habilidades;
+  final String movimientos;
+  final String gruposHuevo;
+  final String formas;
+  final String evoluciones;
+  final DateTime actualizadoEn;
+  const PokemonDetailRow({
+    required this.pokemonId,
+    required this.nombre,
+    required this.altura,
+    required this.peso,
+    this.sprite,
+    this.artwork,
+    this.spriteShiny,
+    this.artworkShiny,
+    required this.tipos,
+    required this.estadisticas,
+    required this.habilidades,
+    required this.movimientos,
+    required this.gruposHuevo,
+    required this.formas,
+    required this.evoluciones,
+    required this.actualizadoEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['pokemon_id'] = Variable<int>(pokemonId);
+    map['nombre'] = Variable<String>(nombre);
+    map['altura'] = Variable<int>(altura);
+    map['peso'] = Variable<int>(peso);
+    if (!nullToAbsent || sprite != null) {
+      map['sprite'] = Variable<String>(sprite);
+    }
+    if (!nullToAbsent || artwork != null) {
+      map['artwork'] = Variable<String>(artwork);
+    }
+    if (!nullToAbsent || spriteShiny != null) {
+      map['sprite_shiny'] = Variable<String>(spriteShiny);
+    }
+    if (!nullToAbsent || artworkShiny != null) {
+      map['artwork_shiny'] = Variable<String>(artworkShiny);
+    }
+    map['tipos'] = Variable<String>(tipos);
+    map['estadisticas'] = Variable<String>(estadisticas);
+    map['habilidades'] = Variable<String>(habilidades);
+    map['movimientos'] = Variable<String>(movimientos);
+    map['grupos_huevo'] = Variable<String>(gruposHuevo);
+    map['formas'] = Variable<String>(formas);
+    map['evoluciones'] = Variable<String>(evoluciones);
+    map['actualizado_en'] = Variable<DateTime>(actualizadoEn);
+    return map;
+  }
+
+  PokemonDetailsCompanion toCompanion(bool nullToAbsent) {
+    return PokemonDetailsCompanion(
+      pokemonId: Value(pokemonId),
+      nombre: Value(nombre),
+      altura: Value(altura),
+      peso: Value(peso),
+      sprite: sprite == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sprite),
+      artwork: artwork == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artwork),
+      spriteShiny: spriteShiny == null && nullToAbsent
+          ? const Value.absent()
+          : Value(spriteShiny),
+      artworkShiny: artworkShiny == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artworkShiny),
+      tipos: Value(tipos),
+      estadisticas: Value(estadisticas),
+      habilidades: Value(habilidades),
+      movimientos: Value(movimientos),
+      gruposHuevo: Value(gruposHuevo),
+      formas: Value(formas),
+      evoluciones: Value(evoluciones),
+      actualizadoEn: Value(actualizadoEn),
+    );
+  }
+
+  factory PokemonDetailRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PokemonDetailRow(
+      pokemonId: serializer.fromJson<int>(json['pokemonId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      altura: serializer.fromJson<int>(json['altura']),
+      peso: serializer.fromJson<int>(json['peso']),
+      sprite: serializer.fromJson<String?>(json['sprite']),
+      artwork: serializer.fromJson<String?>(json['artwork']),
+      spriteShiny: serializer.fromJson<String?>(json['spriteShiny']),
+      artworkShiny: serializer.fromJson<String?>(json['artworkShiny']),
+      tipos: serializer.fromJson<String>(json['tipos']),
+      estadisticas: serializer.fromJson<String>(json['estadisticas']),
+      habilidades: serializer.fromJson<String>(json['habilidades']),
+      movimientos: serializer.fromJson<String>(json['movimientos']),
+      gruposHuevo: serializer.fromJson<String>(json['gruposHuevo']),
+      formas: serializer.fromJson<String>(json['formas']),
+      evoluciones: serializer.fromJson<String>(json['evoluciones']),
+      actualizadoEn: serializer.fromJson<DateTime>(json['actualizadoEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'pokemonId': serializer.toJson<int>(pokemonId),
+      'nombre': serializer.toJson<String>(nombre),
+      'altura': serializer.toJson<int>(altura),
+      'peso': serializer.toJson<int>(peso),
+      'sprite': serializer.toJson<String?>(sprite),
+      'artwork': serializer.toJson<String?>(artwork),
+      'spriteShiny': serializer.toJson<String?>(spriteShiny),
+      'artworkShiny': serializer.toJson<String?>(artworkShiny),
+      'tipos': serializer.toJson<String>(tipos),
+      'estadisticas': serializer.toJson<String>(estadisticas),
+      'habilidades': serializer.toJson<String>(habilidades),
+      'movimientos': serializer.toJson<String>(movimientos),
+      'gruposHuevo': serializer.toJson<String>(gruposHuevo),
+      'formas': serializer.toJson<String>(formas),
+      'evoluciones': serializer.toJson<String>(evoluciones),
+      'actualizadoEn': serializer.toJson<DateTime>(actualizadoEn),
+    };
+  }
+
+  PokemonDetailRow copyWith({
+    int? pokemonId,
+    String? nombre,
+    int? altura,
+    int? peso,
+    Value<String?> sprite = const Value.absent(),
+    Value<String?> artwork = const Value.absent(),
+    Value<String?> spriteShiny = const Value.absent(),
+    Value<String?> artworkShiny = const Value.absent(),
+    String? tipos,
+    String? estadisticas,
+    String? habilidades,
+    String? movimientos,
+    String? gruposHuevo,
+    String? formas,
+    String? evoluciones,
+    DateTime? actualizadoEn,
+  }) => PokemonDetailRow(
+    pokemonId: pokemonId ?? this.pokemonId,
+    nombre: nombre ?? this.nombre,
+    altura: altura ?? this.altura,
+    peso: peso ?? this.peso,
+    sprite: sprite.present ? sprite.value : this.sprite,
+    artwork: artwork.present ? artwork.value : this.artwork,
+    spriteShiny: spriteShiny.present ? spriteShiny.value : this.spriteShiny,
+    artworkShiny: artworkShiny.present ? artworkShiny.value : this.artworkShiny,
+    tipos: tipos ?? this.tipos,
+    estadisticas: estadisticas ?? this.estadisticas,
+    habilidades: habilidades ?? this.habilidades,
+    movimientos: movimientos ?? this.movimientos,
+    gruposHuevo: gruposHuevo ?? this.gruposHuevo,
+    formas: formas ?? this.formas,
+    evoluciones: evoluciones ?? this.evoluciones,
+    actualizadoEn: actualizadoEn ?? this.actualizadoEn,
+  );
+  PokemonDetailRow copyWithCompanion(PokemonDetailsCompanion data) {
+    return PokemonDetailRow(
+      pokemonId: data.pokemonId.present ? data.pokemonId.value : this.pokemonId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      altura: data.altura.present ? data.altura.value : this.altura,
+      peso: data.peso.present ? data.peso.value : this.peso,
+      sprite: data.sprite.present ? data.sprite.value : this.sprite,
+      artwork: data.artwork.present ? data.artwork.value : this.artwork,
+      spriteShiny: data.spriteShiny.present
+          ? data.spriteShiny.value
+          : this.spriteShiny,
+      artworkShiny: data.artworkShiny.present
+          ? data.artworkShiny.value
+          : this.artworkShiny,
+      tipos: data.tipos.present ? data.tipos.value : this.tipos,
+      estadisticas: data.estadisticas.present
+          ? data.estadisticas.value
+          : this.estadisticas,
+      habilidades: data.habilidades.present
+          ? data.habilidades.value
+          : this.habilidades,
+      movimientos: data.movimientos.present
+          ? data.movimientos.value
+          : this.movimientos,
+      gruposHuevo: data.gruposHuevo.present
+          ? data.gruposHuevo.value
+          : this.gruposHuevo,
+      formas: data.formas.present ? data.formas.value : this.formas,
+      evoluciones: data.evoluciones.present
+          ? data.evoluciones.value
+          : this.evoluciones,
+      actualizadoEn: data.actualizadoEn.present
+          ? data.actualizadoEn.value
+          : this.actualizadoEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PokemonDetailRow(')
+          ..write('pokemonId: $pokemonId, ')
+          ..write('nombre: $nombre, ')
+          ..write('altura: $altura, ')
+          ..write('peso: $peso, ')
+          ..write('sprite: $sprite, ')
+          ..write('artwork: $artwork, ')
+          ..write('spriteShiny: $spriteShiny, ')
+          ..write('artworkShiny: $artworkShiny, ')
+          ..write('tipos: $tipos, ')
+          ..write('estadisticas: $estadisticas, ')
+          ..write('habilidades: $habilidades, ')
+          ..write('movimientos: $movimientos, ')
+          ..write('gruposHuevo: $gruposHuevo, ')
+          ..write('formas: $formas, ')
+          ..write('evoluciones: $evoluciones, ')
+          ..write('actualizadoEn: $actualizadoEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    pokemonId,
+    nombre,
+    altura,
+    peso,
+    sprite,
+    artwork,
+    spriteShiny,
+    artworkShiny,
+    tipos,
+    estadisticas,
+    habilidades,
+    movimientos,
+    gruposHuevo,
+    formas,
+    evoluciones,
+    actualizadoEn,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PokemonDetailRow &&
+          other.pokemonId == this.pokemonId &&
+          other.nombre == this.nombre &&
+          other.altura == this.altura &&
+          other.peso == this.peso &&
+          other.sprite == this.sprite &&
+          other.artwork == this.artwork &&
+          other.spriteShiny == this.spriteShiny &&
+          other.artworkShiny == this.artworkShiny &&
+          other.tipos == this.tipos &&
+          other.estadisticas == this.estadisticas &&
+          other.habilidades == this.habilidades &&
+          other.movimientos == this.movimientos &&
+          other.gruposHuevo == this.gruposHuevo &&
+          other.formas == this.formas &&
+          other.evoluciones == this.evoluciones &&
+          other.actualizadoEn == this.actualizadoEn);
+}
+
+class PokemonDetailsCompanion extends UpdateCompanion<PokemonDetailRow> {
+  final Value<int> pokemonId;
+  final Value<String> nombre;
+  final Value<int> altura;
+  final Value<int> peso;
+  final Value<String?> sprite;
+  final Value<String?> artwork;
+  final Value<String?> spriteShiny;
+  final Value<String?> artworkShiny;
+  final Value<String> tipos;
+  final Value<String> estadisticas;
+  final Value<String> habilidades;
+  final Value<String> movimientos;
+  final Value<String> gruposHuevo;
+  final Value<String> formas;
+  final Value<String> evoluciones;
+  final Value<DateTime> actualizadoEn;
+  const PokemonDetailsCompanion({
+    this.pokemonId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.altura = const Value.absent(),
+    this.peso = const Value.absent(),
+    this.sprite = const Value.absent(),
+    this.artwork = const Value.absent(),
+    this.spriteShiny = const Value.absent(),
+    this.artworkShiny = const Value.absent(),
+    this.tipos = const Value.absent(),
+    this.estadisticas = const Value.absent(),
+    this.habilidades = const Value.absent(),
+    this.movimientos = const Value.absent(),
+    this.gruposHuevo = const Value.absent(),
+    this.formas = const Value.absent(),
+    this.evoluciones = const Value.absent(),
+    this.actualizadoEn = const Value.absent(),
+  });
+  PokemonDetailsCompanion.insert({
+    this.pokemonId = const Value.absent(),
+    required String nombre,
+    required int altura,
+    required int peso,
+    this.sprite = const Value.absent(),
+    this.artwork = const Value.absent(),
+    this.spriteShiny = const Value.absent(),
+    this.artworkShiny = const Value.absent(),
+    required String tipos,
+    required String estadisticas,
+    required String habilidades,
+    required String movimientos,
+    required String gruposHuevo,
+    required String formas,
+    required String evoluciones,
+    required DateTime actualizadoEn,
+  }) : nombre = Value(nombre),
+       altura = Value(altura),
+       peso = Value(peso),
+       tipos = Value(tipos),
+       estadisticas = Value(estadisticas),
+       habilidades = Value(habilidades),
+       movimientos = Value(movimientos),
+       gruposHuevo = Value(gruposHuevo),
+       formas = Value(formas),
+       evoluciones = Value(evoluciones),
+       actualizadoEn = Value(actualizadoEn);
+  static Insertable<PokemonDetailRow> custom({
+    Expression<int>? pokemonId,
+    Expression<String>? nombre,
+    Expression<int>? altura,
+    Expression<int>? peso,
+    Expression<String>? sprite,
+    Expression<String>? artwork,
+    Expression<String>? spriteShiny,
+    Expression<String>? artworkShiny,
+    Expression<String>? tipos,
+    Expression<String>? estadisticas,
+    Expression<String>? habilidades,
+    Expression<String>? movimientos,
+    Expression<String>? gruposHuevo,
+    Expression<String>? formas,
+    Expression<String>? evoluciones,
+    Expression<DateTime>? actualizadoEn,
+  }) {
+    return RawValuesInsertable({
+      if (pokemonId != null) 'pokemon_id': pokemonId,
+      if (nombre != null) 'nombre': nombre,
+      if (altura != null) 'altura': altura,
+      if (peso != null) 'peso': peso,
+      if (sprite != null) 'sprite': sprite,
+      if (artwork != null) 'artwork': artwork,
+      if (spriteShiny != null) 'sprite_shiny': spriteShiny,
+      if (artworkShiny != null) 'artwork_shiny': artworkShiny,
+      if (tipos != null) 'tipos': tipos,
+      if (estadisticas != null) 'estadisticas': estadisticas,
+      if (habilidades != null) 'habilidades': habilidades,
+      if (movimientos != null) 'movimientos': movimientos,
+      if (gruposHuevo != null) 'grupos_huevo': gruposHuevo,
+      if (formas != null) 'formas': formas,
+      if (evoluciones != null) 'evoluciones': evoluciones,
+      if (actualizadoEn != null) 'actualizado_en': actualizadoEn,
+    });
+  }
+
+  PokemonDetailsCompanion copyWith({
+    Value<int>? pokemonId,
+    Value<String>? nombre,
+    Value<int>? altura,
+    Value<int>? peso,
+    Value<String?>? sprite,
+    Value<String?>? artwork,
+    Value<String?>? spriteShiny,
+    Value<String?>? artworkShiny,
+    Value<String>? tipos,
+    Value<String>? estadisticas,
+    Value<String>? habilidades,
+    Value<String>? movimientos,
+    Value<String>? gruposHuevo,
+    Value<String>? formas,
+    Value<String>? evoluciones,
+    Value<DateTime>? actualizadoEn,
+  }) {
+    return PokemonDetailsCompanion(
+      pokemonId: pokemonId ?? this.pokemonId,
+      nombre: nombre ?? this.nombre,
+      altura: altura ?? this.altura,
+      peso: peso ?? this.peso,
+      sprite: sprite ?? this.sprite,
+      artwork: artwork ?? this.artwork,
+      spriteShiny: spriteShiny ?? this.spriteShiny,
+      artworkShiny: artworkShiny ?? this.artworkShiny,
+      tipos: tipos ?? this.tipos,
+      estadisticas: estadisticas ?? this.estadisticas,
+      habilidades: habilidades ?? this.habilidades,
+      movimientos: movimientos ?? this.movimientos,
+      gruposHuevo: gruposHuevo ?? this.gruposHuevo,
+      formas: formas ?? this.formas,
+      evoluciones: evoluciones ?? this.evoluciones,
+      actualizadoEn: actualizadoEn ?? this.actualizadoEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (pokemonId.present) {
+      map['pokemon_id'] = Variable<int>(pokemonId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (altura.present) {
+      map['altura'] = Variable<int>(altura.value);
+    }
+    if (peso.present) {
+      map['peso'] = Variable<int>(peso.value);
+    }
+    if (sprite.present) {
+      map['sprite'] = Variable<String>(sprite.value);
+    }
+    if (artwork.present) {
+      map['artwork'] = Variable<String>(artwork.value);
+    }
+    if (spriteShiny.present) {
+      map['sprite_shiny'] = Variable<String>(spriteShiny.value);
+    }
+    if (artworkShiny.present) {
+      map['artwork_shiny'] = Variable<String>(artworkShiny.value);
+    }
+    if (tipos.present) {
+      map['tipos'] = Variable<String>(tipos.value);
+    }
+    if (estadisticas.present) {
+      map['estadisticas'] = Variable<String>(estadisticas.value);
+    }
+    if (habilidades.present) {
+      map['habilidades'] = Variable<String>(habilidades.value);
+    }
+    if (movimientos.present) {
+      map['movimientos'] = Variable<String>(movimientos.value);
+    }
+    if (gruposHuevo.present) {
+      map['grupos_huevo'] = Variable<String>(gruposHuevo.value);
+    }
+    if (formas.present) {
+      map['formas'] = Variable<String>(formas.value);
+    }
+    if (evoluciones.present) {
+      map['evoluciones'] = Variable<String>(evoluciones.value);
+    }
+    if (actualizadoEn.present) {
+      map['actualizado_en'] = Variable<DateTime>(actualizadoEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PokemonDetailsCompanion(')
+          ..write('pokemonId: $pokemonId, ')
+          ..write('nombre: $nombre, ')
+          ..write('altura: $altura, ')
+          ..write('peso: $peso, ')
+          ..write('sprite: $sprite, ')
+          ..write('artwork: $artwork, ')
+          ..write('spriteShiny: $spriteShiny, ')
+          ..write('artworkShiny: $artworkShiny, ')
+          ..write('tipos: $tipos, ')
+          ..write('estadisticas: $estadisticas, ')
+          ..write('habilidades: $habilidades, ')
+          ..write('movimientos: $movimientos, ')
+          ..write('gruposHuevo: $gruposHuevo, ')
+          ..write('formas: $formas, ')
+          ..write('evoluciones: $evoluciones, ')
+          ..write('actualizadoEn: $actualizadoEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1783,6 +2704,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PokemonStatsTable pokemonStats = $PokemonStatsTable(this);
   late final $FavoritesTable favorites = $FavoritesTable(this);
   late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
+  late final $PokemonDetailsTable pokemonDetails = $PokemonDetailsTable(this);
   late final Index pokemonNameIdx = Index(
     'pokemon_name_idx',
     'CREATE INDEX pokemon_name_idx ON pokemons (name)',
@@ -1810,6 +2732,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pokemonStats,
     favorites,
     syncMetadata,
+    pokemonDetails,
     pokemonNameIdx,
     pokemonDexIdx,
     pokemonGenerationIdx,
@@ -3676,6 +4599,440 @@ typedef $$SyncMetadataTableProcessedTableManager =
       SyncMetadataData,
       PrefetchHooks Function()
     >;
+typedef $$PokemonDetailsTableCreateCompanionBuilder =
+    PokemonDetailsCompanion Function({
+      Value<int> pokemonId,
+      required String nombre,
+      required int altura,
+      required int peso,
+      Value<String?> sprite,
+      Value<String?> artwork,
+      Value<String?> spriteShiny,
+      Value<String?> artworkShiny,
+      required String tipos,
+      required String estadisticas,
+      required String habilidades,
+      required String movimientos,
+      required String gruposHuevo,
+      required String formas,
+      required String evoluciones,
+      required DateTime actualizadoEn,
+    });
+typedef $$PokemonDetailsTableUpdateCompanionBuilder =
+    PokemonDetailsCompanion Function({
+      Value<int> pokemonId,
+      Value<String> nombre,
+      Value<int> altura,
+      Value<int> peso,
+      Value<String?> sprite,
+      Value<String?> artwork,
+      Value<String?> spriteShiny,
+      Value<String?> artworkShiny,
+      Value<String> tipos,
+      Value<String> estadisticas,
+      Value<String> habilidades,
+      Value<String> movimientos,
+      Value<String> gruposHuevo,
+      Value<String> formas,
+      Value<String> evoluciones,
+      Value<DateTime> actualizadoEn,
+    });
+
+class $$PokemonDetailsTableFilterComposer
+    extends Composer<_$AppDatabase, $PokemonDetailsTable> {
+  $$PokemonDetailsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get pokemonId => $composableBuilder(
+    column: $table.pokemonId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get altura => $composableBuilder(
+    column: $table.altura,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get peso => $composableBuilder(
+    column: $table.peso,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sprite => $composableBuilder(
+    column: $table.sprite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get artwork => $composableBuilder(
+    column: $table.artwork,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get spriteShiny => $composableBuilder(
+    column: $table.spriteShiny,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get artworkShiny => $composableBuilder(
+    column: $table.artworkShiny,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipos => $composableBuilder(
+    column: $table.tipos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estadisticas => $composableBuilder(
+    column: $table.estadisticas,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get habilidades => $composableBuilder(
+    column: $table.habilidades,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get movimientos => $composableBuilder(
+    column: $table.movimientos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gruposHuevo => $composableBuilder(
+    column: $table.gruposHuevo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get formas => $composableBuilder(
+    column: $table.formas,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evoluciones => $composableBuilder(
+    column: $table.evoluciones,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get actualizadoEn => $composableBuilder(
+    column: $table.actualizadoEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PokemonDetailsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PokemonDetailsTable> {
+  $$PokemonDetailsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get pokemonId => $composableBuilder(
+    column: $table.pokemonId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get altura => $composableBuilder(
+    column: $table.altura,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get peso => $composableBuilder(
+    column: $table.peso,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sprite => $composableBuilder(
+    column: $table.sprite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get artwork => $composableBuilder(
+    column: $table.artwork,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get spriteShiny => $composableBuilder(
+    column: $table.spriteShiny,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get artworkShiny => $composableBuilder(
+    column: $table.artworkShiny,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipos => $composableBuilder(
+    column: $table.tipos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estadisticas => $composableBuilder(
+    column: $table.estadisticas,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get habilidades => $composableBuilder(
+    column: $table.habilidades,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get movimientos => $composableBuilder(
+    column: $table.movimientos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gruposHuevo => $composableBuilder(
+    column: $table.gruposHuevo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get formas => $composableBuilder(
+    column: $table.formas,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evoluciones => $composableBuilder(
+    column: $table.evoluciones,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get actualizadoEn => $composableBuilder(
+    column: $table.actualizadoEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PokemonDetailsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PokemonDetailsTable> {
+  $$PokemonDetailsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get pokemonId =>
+      $composableBuilder(column: $table.pokemonId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<int> get altura =>
+      $composableBuilder(column: $table.altura, builder: (column) => column);
+
+  GeneratedColumn<int> get peso =>
+      $composableBuilder(column: $table.peso, builder: (column) => column);
+
+  GeneratedColumn<String> get sprite =>
+      $composableBuilder(column: $table.sprite, builder: (column) => column);
+
+  GeneratedColumn<String> get artwork =>
+      $composableBuilder(column: $table.artwork, builder: (column) => column);
+
+  GeneratedColumn<String> get spriteShiny => $composableBuilder(
+    column: $table.spriteShiny,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get artworkShiny => $composableBuilder(
+    column: $table.artworkShiny,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tipos =>
+      $composableBuilder(column: $table.tipos, builder: (column) => column);
+
+  GeneratedColumn<String> get estadisticas => $composableBuilder(
+    column: $table.estadisticas,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get habilidades => $composableBuilder(
+    column: $table.habilidades,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get movimientos => $composableBuilder(
+    column: $table.movimientos,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get gruposHuevo => $composableBuilder(
+    column: $table.gruposHuevo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get formas =>
+      $composableBuilder(column: $table.formas, builder: (column) => column);
+
+  GeneratedColumn<String> get evoluciones => $composableBuilder(
+    column: $table.evoluciones,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get actualizadoEn => $composableBuilder(
+    column: $table.actualizadoEn,
+    builder: (column) => column,
+  );
+}
+
+class $$PokemonDetailsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PokemonDetailsTable,
+          PokemonDetailRow,
+          $$PokemonDetailsTableFilterComposer,
+          $$PokemonDetailsTableOrderingComposer,
+          $$PokemonDetailsTableAnnotationComposer,
+          $$PokemonDetailsTableCreateCompanionBuilder,
+          $$PokemonDetailsTableUpdateCompanionBuilder,
+          (
+            PokemonDetailRow,
+            BaseReferences<
+              _$AppDatabase,
+              $PokemonDetailsTable,
+              PokemonDetailRow
+            >,
+          ),
+          PokemonDetailRow,
+          PrefetchHooks Function()
+        > {
+  $$PokemonDetailsTableTableManager(
+    _$AppDatabase db,
+    $PokemonDetailsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PokemonDetailsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PokemonDetailsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PokemonDetailsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> pokemonId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<int> altura = const Value.absent(),
+                Value<int> peso = const Value.absent(),
+                Value<String?> sprite = const Value.absent(),
+                Value<String?> artwork = const Value.absent(),
+                Value<String?> spriteShiny = const Value.absent(),
+                Value<String?> artworkShiny = const Value.absent(),
+                Value<String> tipos = const Value.absent(),
+                Value<String> estadisticas = const Value.absent(),
+                Value<String> habilidades = const Value.absent(),
+                Value<String> movimientos = const Value.absent(),
+                Value<String> gruposHuevo = const Value.absent(),
+                Value<String> formas = const Value.absent(),
+                Value<String> evoluciones = const Value.absent(),
+                Value<DateTime> actualizadoEn = const Value.absent(),
+              }) => PokemonDetailsCompanion(
+                pokemonId: pokemonId,
+                nombre: nombre,
+                altura: altura,
+                peso: peso,
+                sprite: sprite,
+                artwork: artwork,
+                spriteShiny: spriteShiny,
+                artworkShiny: artworkShiny,
+                tipos: tipos,
+                estadisticas: estadisticas,
+                habilidades: habilidades,
+                movimientos: movimientos,
+                gruposHuevo: gruposHuevo,
+                formas: formas,
+                evoluciones: evoluciones,
+                actualizadoEn: actualizadoEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> pokemonId = const Value.absent(),
+                required String nombre,
+                required int altura,
+                required int peso,
+                Value<String?> sprite = const Value.absent(),
+                Value<String?> artwork = const Value.absent(),
+                Value<String?> spriteShiny = const Value.absent(),
+                Value<String?> artworkShiny = const Value.absent(),
+                required String tipos,
+                required String estadisticas,
+                required String habilidades,
+                required String movimientos,
+                required String gruposHuevo,
+                required String formas,
+                required String evoluciones,
+                required DateTime actualizadoEn,
+              }) => PokemonDetailsCompanion.insert(
+                pokemonId: pokemonId,
+                nombre: nombre,
+                altura: altura,
+                peso: peso,
+                sprite: sprite,
+                artwork: artwork,
+                spriteShiny: spriteShiny,
+                artworkShiny: artworkShiny,
+                tipos: tipos,
+                estadisticas: estadisticas,
+                habilidades: habilidades,
+                movimientos: movimientos,
+                gruposHuevo: gruposHuevo,
+                formas: formas,
+                evoluciones: evoluciones,
+                actualizadoEn: actualizadoEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PokemonDetailsTable, PokemonDetailRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PokemonDetailsTable,
+                    PokemonDetailRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PokemonDetailsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PokemonDetailsTable,
+      PokemonDetailRow,
+      $$PokemonDetailsTableFilterComposer,
+      $$PokemonDetailsTableOrderingComposer,
+      $$PokemonDetailsTableAnnotationComposer,
+      $$PokemonDetailsTableCreateCompanionBuilder,
+      $$PokemonDetailsTableUpdateCompanionBuilder,
+      (
+        PokemonDetailRow,
+        BaseReferences<_$AppDatabase, $PokemonDetailsTable, PokemonDetailRow>,
+      ),
+      PokemonDetailRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3692,4 +5049,6 @@ class $AppDatabaseManager {
       $$FavoritesTableTableManager(_db, _db.favorites);
   $$SyncMetadataTableTableManager get syncMetadata =>
       $$SyncMetadataTableTableManager(_db, _db.syncMetadata);
+  $$PokemonDetailsTableTableManager get pokemonDetails =>
+      $$PokemonDetailsTableTableManager(_db, _db.pokemonDetails);
 }

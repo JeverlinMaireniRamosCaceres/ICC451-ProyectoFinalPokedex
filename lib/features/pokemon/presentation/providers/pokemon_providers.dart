@@ -11,6 +11,8 @@ import 'catalog_state.dart';
 import '../../../../core/network/connectivity_monitor.dart';
 import '../../data/sync/pokemon_sync_coordinator.dart';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import '../../domain/entities/pokemon_detail.dart';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -118,4 +120,19 @@ final connectivityMonitorProvider = Provider<ConnectivityMonitor>((ref) {
   ref.onDispose(monitor.dispose);
 
   return monitor;
+});
+
+// Detalle de un Pokemon por su id
+// Muestra lo que ya este guardado en la base y al mismo tiempo pide
+// la version de la API, cuando llega se guarda y la pantalla se actualiza sola
+final detalleProvider = StreamProvider.family<PokemonDetail?, int>((ref, id) {
+  final repositorio = ref.watch(pokemonRepositoryProvider);
+
+  unawaited(
+    repositorio.sincronizarDetalle(id).catchError((Object e) {
+      debugPrint('No se pudo actualizar el detalle $id $e');
+    }),
+  );
+
+  return repositorio.observarDetalle(id);
 });

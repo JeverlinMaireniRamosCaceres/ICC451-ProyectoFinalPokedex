@@ -8,6 +8,7 @@ import '../datasources/local/pokemon_local_datasource.dart';
 import '../datasources/remote/pokemon_remote_datasource.dart';
 import '../mappers/pokemon_dto_mapper.dart';
 import '../dtos/pokemon_dto.dart';
+import '../mappers/pokemon_detail_dto_mapper.dart';
 
 import '../../../../core/errors/failure.dart';
 
@@ -70,6 +71,20 @@ class PokemonSyncCoordinator {
       if (metadatos?.status == SyncStatus.complete) return;
       await _sincronizarPagina(offset: metadatos?.nextOffset ?? 0);
     });
+  }
+
+  /// Descarga el detalle de un Pokemon y lo guarda en la base
+  /// Se llama al abrir el detalle
+  /// La pantalla no recibe el resultado, lo ve porque observa la base
+  Future<void> sincronizarDetalle(int id) async {
+    try {
+      final dto = await _remoto.obtenerDetallePokemon(id);
+      await _local.guardarDetalle(dto.aEntidad());
+      debugPrint('[Sync] Detalle $id guardado');
+    } catch (e) {
+      debugPrint('[Sync] Error en el detalle $id $e');
+      rethrow;
+    }
   }
 
   /// Si ya hay una sincronizacion corriendo, devuelve esa en vez de comenzar una nueva
