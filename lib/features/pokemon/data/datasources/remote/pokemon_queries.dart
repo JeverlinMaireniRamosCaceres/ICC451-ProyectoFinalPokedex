@@ -51,26 +51,48 @@ query CatalogoPokemon($limit: Int!, $offset: Int!) {
 ''';
 
 // Query del detalle de un Pokemon
-// Se pide por id
-// No pide el nombre, estadisticas ni tipos porque ya se guardaron en el catalogo
+// Se pide por id, sirve tambien para las formas porque cada forma tiene su propio id
+// Trae nombre, tipos, imagenes y estadisticas porque las formas no estan en el catalogo
 const String detallePokemonQuery = r'''
 query DetallePokemon($id: Int!) {
   pokemon(where: { id: { _eq: $id } }) {
     id
+    name
     height
     weight
+    pokemontypes(order_by: { slot: asc }) {
+      slot
+      type { id name }
+    }
     pokemonsprites {
+      sprite: sprites(path: "front_default")
+      artwork: sprites(path: "other.official-artwork.front_default")
       shiny: sprites(path: "front_shiny")
       artworkShiny: sprites(path: "other.official-artwork.front_shiny")
     }
+    pokemonstats {
+      base_stat
+      stat { name }
+    }
     pokemonabilities(order_by: { slot: asc }) {
       is_hidden
-      ability { name }
+      ability {
+        name
+        abilityeffecttexts(where: { language_id: { _eq: 9 } }) {
+          short_effect
+        }
+      }
     }
-    pokemonmoves(distinct_on: move_id, order_by: { move_id: asc }) {
+    pokemonmoves(order_by: { level: asc }) {
+      level
       move { name }
+      movelearnmethod { name }
+      versiongroup { name }
     }
     pokemonspecy {
+      pokemonegggroups {
+        egggroup { name }
+      }
       pokemons(order_by: { id: asc }) {
         id
         name
@@ -81,6 +103,13 @@ query DetallePokemon($id: Int!) {
           id
           name
           evolves_from_species_id
+          pokemonevolutions {
+            min_level
+            min_happiness
+            time_of_day
+            evolutiontrigger { name }
+            item { name }
+          }
         }
       }
     }
