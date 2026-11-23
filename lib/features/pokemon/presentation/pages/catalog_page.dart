@@ -16,12 +16,14 @@ class CatalogPage extends StatelessWidget {
     required this.alReintentar,
     required this.alCargarMas,
     required this.monitor,
+    required this.alBuscar,
   });
 
   final CatalogState estado;
   final VoidCallback alReintentar;
   final VoidCallback alCargarMas;
   final ConnectivityMonitor monitor;
+  final ValueChanged<String> alBuscar;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,19 @@ class CatalogPage extends StatelessWidget {
           ),
         ],
       ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: TextField(
+                  onChanged: alBuscar,
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar por nombre',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ),
             // El switch es exhaustivo porque CatalogState es sealed
             switch (estado) {
               CatalogLoading() => const SliverFillRemaining(
@@ -71,6 +86,14 @@ class CatalogPage extends StatelessWidget {
               CatalogError(fallo:final failure) => SliverFillRemaining(
                 hasScrollBody: false,
                 child: ErrorState(mensaje: failure.mensaje, alReintentar: alReintentar),
+              ),
+              CatalogSuccess(:final pokemons) when pokemons.isEmpty =>
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: EmptyState(
+                  mensaje: 'No se encontró ningún Pokémon con ese nombre',
+                  icono: Icons.search_off,
+                ),
               ),
               CatalogSuccess(:final pokemons) => _PokemonGrid(
                 pokemons: pokemons,

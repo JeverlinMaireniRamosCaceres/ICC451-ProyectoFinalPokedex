@@ -32,6 +32,7 @@ class CatalogScreen extends ConsumerWidget {
       alReintentar: cargarMas,
       alCargarMas: cargarMas,
       monitor: ref.watch(connectivityMonitorProvider),
+      alBuscar: ref.read(busquedaProvider.notifier).escribir,
     );
   }
 
