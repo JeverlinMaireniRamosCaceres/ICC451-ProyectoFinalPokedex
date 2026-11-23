@@ -13,6 +13,7 @@ import '../../data/sync/pokemon_sync_coordinator.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/pokemon_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -50,22 +51,32 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   );
 });
 
+// Preferencias guardadas en el telefono
+// Se cargan en main antes de abrir la app y se pasan con overrideWithValue
+// Aqui lanza error para que no se use sin haberlas cargado
+final preferenciasProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('Las preferencias se cargan en main');
+});
+
 // Guarda el texto de busqueda
 // Espera 400 ms sin que el usuario escriba antes de buscar (debounce)
 // asi no se hace una consulta por cada letra
+// Se guarda en las preferencias para conservarla al cerrar la app
 class BusquedaNotifier extends Notifier<String> {
   Timer? _espera;
 
   @override
   String build() {
     ref.onDispose(() => _espera?.cancel());
-    return '';
+    // empieza con la busqueda de la ultima vez, o vacia si no hay
+    return ref.read(preferenciasProvider).getString('busqueda') ?? '';
   }
 
   void escribir(String texto) {
     _espera?.cancel();
     _espera = Timer(const Duration(milliseconds: 400), () {
       state = texto.trim().toLowerCase();
+      unawaited(ref.read(preferenciasProvider).setString('busqueda', state));
     });
   }
 }
@@ -90,32 +101,66 @@ class FiltrosCatalogo {
 
 // Guarda los filtros, cada cambio crea un FiltrosCatalogo nuevo con el valor cambiado
 // y los demas igual, asi Riverpod detecta el cambio y vuelve a consultar
+// Se guardan en las preferencias para conservarlos al cerrar la app
 class FiltrosNotifier extends Notifier<FiltrosCatalogo> {
   @override
-  FiltrosCatalogo build() => const FiltrosCatalogo();
+  FiltrosCatalogo build() {
+    // empieza con los filtros de la ultima vez
+    final preferencias = ref.read(preferenciasProvider);
+    final orden = preferencias.getString('orden');
+    return FiltrosCatalogo(
+      tipo: preferencias.getString('tipo'),
+      generacion: preferencias.getInt('generacion'),
+      // el orden se guarda como texto, byName lo vuelve a convertir en el enum
+      orden: orden == null
+          ? OrdenCatalogo.numero
+          : OrdenCatalogo.values.byName(orden),
+    );
+  }
 
   void cambiarTipo(String? tipo) {
-    state = FiltrosCatalogo(
+    _guardar(FiltrosCatalogo(
       tipo: tipo,
       generacion: state.generacion,
       orden: state.orden,
-    );
+    ));
   }
 
   void cambiarGeneracion(int? generacion) {
-    state = FiltrosCatalogo(
+    _guardar(FiltrosCatalogo(
       tipo: state.tipo,
       generacion: generacion,
       orden: state.orden,
-    );
+    ));
   }
 
   void cambiarOrden(OrdenCatalogo orden) {
-    state = FiltrosCatalogo(
+    _guardar(FiltrosCatalogo(
       tipo: state.tipo,
       generacion: state.generacion,
       orden: orden,
-    );
+    ));
+  }
+
+  // Cambia el estado y lo guarda en el telefono
+  // Si un filtro es null se borra, para que al volver no se aplique
+  void _guardar(FiltrosCatalogo filtros) {
+    state = filtros;
+    final preferencias = ref.read(preferenciasProvider);
+
+    if (filtros.tipo == null) {
+      unawaited(preferencias.remove('tipo'));
+    } else {
+      unawaited(preferencias.setString('tipo', filtros.tipo!));
+    }
+
+    if (filtros.generacion == null) {
+      unawaited(preferencias.remove('generacion'));
+    } else {
+      unawaited(preferencias.setInt('generacion', filtros.generacion!));
+    }
+
+    unawaited(preferencias.setString('orden', filtros.orden.name));
   }
 }
 

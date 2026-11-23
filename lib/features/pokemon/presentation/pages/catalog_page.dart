@@ -27,6 +27,7 @@ class CatalogPage extends StatelessWidget {
     required this.alCambiarTipo,
     required this.alCambiarGeneracion,
     required this.alCambiarOrden,
+    required this.busqueda,
   });
 
   final CatalogState estado;
@@ -40,6 +41,8 @@ class CatalogPage extends StatelessWidget {
   final ValueChanged<String?> alCambiarTipo;
   final ValueChanged<int?> alCambiarGeneracion;
   final ValueChanged<OrdenCatalogo> alCambiarOrden;
+  // texto con el que empieza el buscador, el de la ultima vez
+  final String busqueda;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +95,8 @@ class CatalogPage extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: TextField(
+                child: TextFormField(
+                  initialValue: busqueda,
                   onChanged: alBuscar,
                   decoration: const InputDecoration(
                     hintText: 'Buscar por nombre',
