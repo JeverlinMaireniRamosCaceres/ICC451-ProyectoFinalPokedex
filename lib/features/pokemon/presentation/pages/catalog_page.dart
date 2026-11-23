@@ -9,6 +9,8 @@ import '../../../../core/network/connectivity_monitor.dart';
 import '../../../../core/widgets/connectivity_indicator.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/sakura.dart';
+import '../../domain/repositories/pokemon_repository.dart';
+import '../../domain/type_effectiveness.dart';
 
 // Pantalla del catálogo, solo dibuja según el estado que recibe
 class CatalogPage extends StatelessWidget {
@@ -19,6 +21,13 @@ class CatalogPage extends StatelessWidget {
     required this.alCargarMas,
     required this.monitor,
     required this.alBuscar,
+    required this.tipo,
+    required this.generacion,
+    required this.orden,
+    required this.alCambiarTipo,
+    required this.alCambiarGeneracion,
+    required this.alCambiarOrden,
+    required this.busqueda,
   });
 
   final CatalogState estado;
@@ -26,6 +35,14 @@ class CatalogPage extends StatelessWidget {
   final VoidCallback alCargarMas;
   final ConnectivityMonitor monitor;
   final ValueChanged<String> alBuscar;
+  final String? tipo;
+  final int? generacion;
+  final OrdenCatalogo orden;
+  final ValueChanged<String?> alCambiarTipo;
+  final ValueChanged<int?> alCambiarGeneracion;
+  final ValueChanged<OrdenCatalogo> alCambiarOrden;
+  // texto con el que empieza el buscador, el de la ultima vez
+  final String busqueda;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +95,8 @@ class CatalogPage extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: TextField(
+                child: TextFormField(
+                  initialValue: busqueda,
                   onChanged: alBuscar,
                   decoration: const InputDecoration(
                     hintText: 'Buscar por nombre',
@@ -86,6 +104,16 @@ class CatalogPage extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: _BarraFiltros(
+                tipo: tipo,
+                generacion: generacion,
+                orden: orden,
+                alCambiarTipo: alCambiarTipo,
+                alCambiarGeneracion: alCambiarGeneracion,
+                alCambiarOrden: alCambiarOrden,
               ),
             ),
             // El switch es exhaustivo porque CatalogState es sealed
@@ -118,7 +146,7 @@ class CatalogPage extends StatelessWidget {
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: EmptyState(
-                  mensaje: 'No se encontró ningún Pokémon con ese nombre',
+                  mensaje: 'No se encontró ningún Pokémon con esa búsqueda o filtros',
                   icono: Icons.search_off,
                 ),
               ),
@@ -158,6 +186,83 @@ class _PokemonGrid extends StatelessWidget {
               (_, i) => PokemonCard(pokemon: pokemons[i]),
           childCount: pokemons.length,
         ),
+      ),
+    );
+  }
+}
+
+// Selectores de tipo, generacion y orden
+// Solo muestra los valores y avisa cuando el usuario elige otro
+class _BarraFiltros extends StatelessWidget {
+  const _BarraFiltros({
+    required this.tipo,
+    required this.generacion,
+    required this.orden,
+    required this.alCambiarTipo,
+    required this.alCambiarGeneracion,
+    required this.alCambiarOrden,
+  });
+
+  final String? tipo;
+  final int? generacion;
+  final OrdenCatalogo orden;
+  final ValueChanged<String?> alCambiarTipo;
+  final ValueChanged<int?> alCambiarGeneracion;
+  final ValueChanged<OrdenCatalogo> alCambiarOrden;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      // Wrap pasa los selectores a otra linea si no caben
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          DropdownButton<String?>(
+            value: tipo,
+            items: [
+              const DropdownMenuItem(value: null, child: Text('Todos los tipos')),
+              // los 18 tipos salen de la tabla de efectividad
+              for (final t in tablaTipos.keys)
+                DropdownMenuItem(value: t, child: Text(t)),
+            ],
+            onChanged: alCambiarTipo,
+          ),
+          DropdownButton<int?>(
+            value: generacion,
+            items: [
+              const DropdownMenuItem(
+                value: null,
+                child: Text('Todas las generaciones'),
+              ),
+              for (var g = 1; g <= 9; g++)
+                DropdownMenuItem(value: g, child: Text('Generación $g')),
+            ],
+            onChanged: alCambiarGeneracion,
+          ),
+          DropdownButton<OrdenCatalogo>(
+            value: orden,
+            items: const [
+              DropdownMenuItem(
+                value: OrdenCatalogo.numero,
+                child: Text('Por número'),
+              ),
+              DropdownMenuItem(
+                value: OrdenCatalogo.nombre,
+                child: Text('Por nombre'),
+              ),
+              DropdownMenuItem(
+                value: OrdenCatalogo.total,
+                child: Text('Por total'),
+              ),
+            ],
+            // el orden nunca es null, por eso se revisa antes de avisar
+            onChanged: (o) {
+              if (o != null) alCambiarOrden(o);
+            },
+          ),
+        ],
       ),
     );
   }

@@ -6,13 +6,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'features/pokemon/presentation/providers/pokemon_providers.dart';
 import 'core/network/connectivity_status.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+Future<void> main() async {
 
   // Prepara Flutter antes de usar la base de datos y los otros paquetes
   WidgetsFlutterBinding.ensureInitialized();
 
-  final container = ProviderContainer();
+  // Se cargan las preferencias guardadas antes de abrir la app
+  // para que el catalogo empiece con la busqueda y los filtros de la ultima vez
+  final preferencias = await SharedPreferences.getInstance();
+
+  final container = ProviderContainer(
+    overrides: [preferenciasProvider.overrideWithValue(preferencias)],
+  );
+
   // Sincroniza el catálogo desde la API sin bloquear la interfaz
   unawaited(
     container
