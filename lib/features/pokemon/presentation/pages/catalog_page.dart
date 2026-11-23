@@ -28,6 +28,7 @@ class CatalogPage extends StatelessWidget {
     required this.alCambiarGeneracion,
     required this.alCambiarOrden,
     required this.busqueda,
+    required this.catalogoParcial,
   });
 
   final CatalogState estado;
@@ -43,6 +44,7 @@ class CatalogPage extends StatelessWidget {
   final ValueChanged<OrdenCatalogo> alCambiarOrden;
   // texto con el que empieza el buscador, el de la ultima vez
   final String busqueda;
+  final bool catalogoParcial;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +118,25 @@ class CatalogPage extends StatelessWidget {
                 alCambiarOrden: alCambiarOrden,
               ),
             ),
+            // Aviso cuando todavia faltan Pokemon por descargar
+            if (catalogoParcial && estado is CatalogSuccess)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Catálogo incompleto, los resultados solo incluyen los Pokémon ya descargados',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             // El switch es exhaustivo porque CatalogState es sealed
             switch (estado) {
               CatalogLoading() => const SliverFillRemaining(

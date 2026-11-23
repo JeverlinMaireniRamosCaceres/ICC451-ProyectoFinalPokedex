@@ -239,3 +239,10 @@ final detalleProvider = StreamProvider.family<PokemonDetail?, int>((ref, id) {
 
   return repositorio.observarDetalle(id);
 });
+
+// true mientras no se haya descargado todo el catalogo
+// Sirve para avisar que la busqueda y los filtros solo incluyen lo descargado
+final catalogoParcialProvider = Provider<bool>((ref) {
+  final estado = ref.watch(syncStateProvider).value;
+  return estado != SyncState.completo;
+});
