@@ -74,12 +74,65 @@ final busquedaProvider = NotifierProvider<BusquedaNotifier, String>(
   BusquedaNotifier.new,
 );
 
+// Filtros y orden elegidos en el catalogo
+// null en tipo o generacion significa que no se filtra por eso
+class FiltrosCatalogo {
+  const FiltrosCatalogo({
+    this.tipo,
+    this.generacion,
+    this.orden = OrdenCatalogo.numero,
+  });
+
+  final String? tipo;
+  final int? generacion;
+  final OrdenCatalogo orden;
+}
+
+// Guarda los filtros, cada cambio crea un FiltrosCatalogo nuevo con el valor cambiado
+// y los demas igual, asi Riverpod detecta el cambio y vuelve a consultar
+class FiltrosNotifier extends Notifier<FiltrosCatalogo> {
+  @override
+  FiltrosCatalogo build() => const FiltrosCatalogo();
+
+  void cambiarTipo(String? tipo) {
+    state = FiltrosCatalogo(
+      tipo: tipo,
+      generacion: state.generacion,
+      orden: state.orden,
+    );
+  }
+
+  void cambiarGeneracion(int? generacion) {
+    state = FiltrosCatalogo(
+      tipo: state.tipo,
+      generacion: generacion,
+      orden: state.orden,
+    );
+  }
+
+  void cambiarOrden(OrdenCatalogo orden) {
+    state = FiltrosCatalogo(
+      tipo: state.tipo,
+      generacion: state.generacion,
+      orden: orden,
+    );
+  }
+}
+
+final filtrosProvider = NotifierProvider<FiltrosNotifier, FiltrosCatalogo>(
+  FiltrosNotifier.new,
+);
+
 // El Stream que viene de la base local, se actualiza solo
 final catalogStreamProvider = StreamProvider<List<Pokemon>>((ref) {
   final busqueda = ref.watch(busquedaProvider);
-  return ref
-      .watch(pokemonRepositoryProvider)
-      .observarCatalogo(busqueda: busqueda);
+  final filtros = ref.watch(filtrosProvider);
+  return ref.watch(pokemonRepositoryProvider).observarCatalogo(
+    busqueda: busqueda,
+    tipo: filtros.tipo,
+    generacion: filtros.generacion,
+    orden: filtros.orden,
+  );
 });
 
 // El estado del sync, también viene de la base local
@@ -94,8 +147,13 @@ final catalogStateProvider = Provider<CatalogState>((ref) {
   final sincronizacion = ref.watch(syncStateProvider).value ?? SyncState.inactivo;
   final busqueda = ref.watch(busquedaProvider);
 
+  final filtros = ref.watch(filtrosProvider);
+  final hayFiltros = busqueda.isNotEmpty ||
+      filtros.tipo != null ||
+      filtros.generacion != null;
+
   return switch (catalogo) {
-    AsyncData(:final value) when value.isNotEmpty || busqueda.isNotEmpty =>
+    AsyncData(:final value) when value.isNotEmpty || hayFiltros =>
         CatalogSuccess(value),
     // Sin datos, el estado del sync decide qué se le explica al usuario
     AsyncData() => switch (sincronizacion) {

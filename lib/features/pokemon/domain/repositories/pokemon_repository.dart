@@ -12,10 +12,23 @@ enum SyncState {
   error,
 }
 
+// Criterios para ordenar el catalogo
+enum OrdenCatalogo {
+  numero,
+  nombre,
+  // total de estadisticas base, de mayor a menor
+  total,
+}
+
 /// Es la interfaz, digase lo que se puede pedir
 /// Es implementado por PokemonRepositoryImpl
 abstract class PokemonRepository {
-  Stream<List<Pokemon>> observarCatalogo({String busqueda = ''});
+  Stream<List<Pokemon>> observarCatalogo({
+    String busqueda = '',
+    String? tipo,
+    int? generacion,
+    OrdenCatalogo orden = OrdenCatalogo.numero,
+  });
 
   // Estado del sync, se actualiza solo cuando cambia
   Stream<SyncState> observarEstadoSincronizacion();

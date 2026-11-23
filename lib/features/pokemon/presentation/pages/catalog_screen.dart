@@ -26,6 +26,9 @@ class CatalogScreen extends ConsumerWidget {
       });
     }
 
+    final filtros = ref.watch(filtrosProvider);
+    final cambiarFiltros = ref.read(filtrosProvider.notifier);
+
     return CatalogPage(
       // hace que la pantalla se redibuje cuando cambia el estado del catalogo
       estado: ref.watch(catalogStateProvider),
@@ -33,6 +36,12 @@ class CatalogScreen extends ConsumerWidget {
       alCargarMas: cargarMas,
       monitor: ref.watch(connectivityMonitorProvider),
       alBuscar: ref.read(busquedaProvider.notifier).escribir,
+      tipo: filtros.tipo,
+      generacion: filtros.generacion,
+      orden: filtros.orden,
+      alCambiarTipo: cambiarFiltros.cambiarTipo,
+      alCambiarGeneracion: cambiarFiltros.cambiarGeneracion,
+      alCambiarOrden: cambiarFiltros.cambiarOrden,
     );
   }
 

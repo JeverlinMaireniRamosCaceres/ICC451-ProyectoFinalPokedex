@@ -5,6 +5,7 @@ import '../../../domain/entities/pokemon.dart';
 import '../../../domain/entities/pokemon_type.dart';
 import '../../mappers/pokemon_detail_row_mapper.dart';
 import '../../../domain/entities/pokemon_detail.dart';
+import '../../../domain/repositories/pokemon_repository.dart';
 
 // Este datasource entrega un pokemon con sus tipos ya agrupados
 class PokemonWithTypes {
@@ -20,29 +21,59 @@ class PokemonLocalDataSource {
 
   final AppDatabase _db;
 
-  // Catálogo completo en un solo join, se actualiza solo cuando cambia la base
-  Stream<List<PokemonWithTypes>> observarCatalogo({String busqueda = ''}) {
-    final query =
-        _db.select(_db.pokemons).join([
-          // trae el pokemon aunque no tenga tipos
-          leftOuterJoin(
-            _db.pokemonTypes,
-            _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
-          ),
-          leftOuterJoin(
-            _db.types,
-            _db.types.id.equalsExp(_db.pokemonTypes.typeId),
-          ),
-        ])..orderBy([
-          OrderingTerm.asc(_db.pokemons.nationalDexNumber),
-          OrderingTerm.asc(_db.pokemonTypes.slot),
-        ]);
+  // Catálogo en un solo join, se actualiza solo cuando cambia la base
+  // Los filtros y el orden se aplican en la consulta
+  Stream<List<PokemonWithTypes>> observarCatalogo({
+    String busqueda = '',
+    String? tipo,
+    int? generacion,
+    OrdenCatalogo orden = OrdenCatalogo.numero,
+  }) {
+    final query = _db.select(_db.pokemons).join([
+      // trae el pokemon aunque no tenga tipos
+      leftOuterJoin(
+        _db.pokemonTypes,
+        _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
+      ),
+      leftOuterJoin(
+        _db.types,
+        _db.types.id.equalsExp(_db.pokemonTypes.typeId),
+      ),
+    ]);
 
     // Si hay texto, solo trae los Pokemon que lo tengan en el nombre
     // LIKE con % antes y despues busca el texto en cualquier parte
     if (busqueda.isNotEmpty) {
       query.where(_db.pokemons.name.like('%$busqueda%'));
     }
+
+    // Solo los Pokemon de esa generacion
+    if (generacion != null) {
+      query.where(_db.pokemons.generationId.equals(generacion));
+    }
+
+    // Solo los Pokemon que tienen ese tipo
+    // Se usa una subconsulta con sus ids, porque filtrar directo en el join
+    // quitaria la fila del otro tipo y el Pokemon se veria con un solo tipo
+    if (tipo != null) {
+      final conTipo = _db.selectOnly(_db.pokemonTypes).join([
+        innerJoin(_db.types, _db.types.id.equalsExp(_db.pokemonTypes.typeId)),
+      ])
+        ..addColumns([_db.pokemonTypes.pokemonId])
+        ..where(_db.types.name.equals(tipo));
+      query.where(_db.pokemons.id.isInQuery(conTipo));
+    }
+
+    query.orderBy([
+      switch (orden) {
+        OrdenCatalogo.numero => OrderingTerm.asc(_db.pokemons.nationalDexNumber),
+        OrdenCatalogo.nombre => OrderingTerm.asc(_db.pokemons.name),
+        OrdenCatalogo.total => OrderingTerm.desc(_db.pokemons.baseStatTotal),
+      },
+      // si empatan, se ordena por numero, y los tipos por slot
+      OrderingTerm.asc(_db.pokemons.nationalDexNumber),
+      OrderingTerm.asc(_db.pokemonTypes.slot),
+    ]);
 
     return query.watch().map(_agrupar);
   }
