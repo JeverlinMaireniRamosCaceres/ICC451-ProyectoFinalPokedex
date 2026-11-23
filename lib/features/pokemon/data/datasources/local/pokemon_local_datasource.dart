@@ -3,6 +3,8 @@ import 'package:drift/drift.dart';
 import '../../../../../core/database/app_database.dart';
 import '../../../domain/entities/pokemon.dart';
 import '../../../domain/entities/pokemon_type.dart';
+import '../../mappers/pokemon_detail_row_mapper.dart';
+import '../../../domain/entities/pokemon_detail.dart';
 
 // Este datasource entrega un pokemon con sus tipos ya agrupados
 class PokemonWithTypes {
@@ -145,4 +147,18 @@ class PokemonLocalDataSource {
       });
     });
   }
+
+  // Detalle de un Pokemon, null si todavia no se ha descargado
+  // Es un Stream, asi la pantalla se actualiza sola cuando se guarda
+  Stream<PokemonDetailRow?> observarDetalle(int id) {
+    return (_db.select(_db.pokemonDetails)
+      ..where((d) => d.pokemonId.equals(id)))
+        .watchSingleOrNull();
+  }
+
+  // Guarda el detalle, si ya existe lo reemplaza
+  Future<void> guardarDetalle(PokemonDetail detalle) {
+    return _db.into(_db.pokemonDetails).insertOnConflictUpdate(detalle.aFila());
+  }
+
 }

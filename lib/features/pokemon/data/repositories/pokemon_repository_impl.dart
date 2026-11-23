@@ -4,6 +4,8 @@ import '../datasources/local/pokemon_local_datasource.dart';
 import '../mappers/pokemon_row_mapper.dart';
 import '../sync/pokemon_sync_coordinator.dart';
 import '../../../../core/errors/failure.dart';
+import '../../domain/entities/pokemon_detail.dart';
+import '../mappers/pokemon_detail_row_mapper.dart';
 
 // Une la base local y la API, la interfaz solo habla con esta clase
 class PokemonRepositoryImpl implements PokemonRepository {
@@ -44,5 +46,14 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   @override
   Failure? get ultimoError => _coordinadorSincronizacion.ultimoError;
+
+  @override
+  Stream<PokemonDetail?> observarDetalle(int id) {
+    return _local.observarDetalle(id).map((fila) => fila?.aEntidad());
+  }
+
+  @override
+  Future<void> sincronizarDetalle(int id) =>
+      _coordinadorSincronizacion.sincronizarDetalle(id);
 
 }

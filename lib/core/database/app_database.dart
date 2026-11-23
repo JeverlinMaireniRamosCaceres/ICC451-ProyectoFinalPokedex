@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'tables/detail_tables.dart';
 
 // Las tablas se separaron por grupo, el catalogo que viene de la API,
 // el control de la sincronizacion y los datos del usuario
@@ -19,6 +20,7 @@ part 'app_database.g.dart';
     PokemonStats,
     Favorites,
     SyncMetadata,
+    PokemonDetails,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -29,5 +31,17 @@ class AppDatabase extends _$AppDatabase {
   // Es la version de la estructura de las tablas
   // Si cambia una tabla, se sube la version y se escribe una migracion
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  // Que hacer cuando la app ya tenia una base con una version anterior
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, desde, hacia) async {
+      // la version 2 agrega la tabla del detalle
+      if (desde < 2) {
+        await m.createTable(pokemonDetails);
+      }
+    },
+  );
+
 }
