@@ -14,7 +14,7 @@ enum SyncState {
 /// Es la interfaz, digase lo que se puede pedir
 /// Es implementado por PokemonRepositoryImpl
 abstract class PokemonRepository {
-  Stream<List<Pokemon>> observarCatalogo();
+  Stream<List<Pokemon>> observarCatalogo({String busqueda = ''});
 
   // Estado del sync, se actualiza solo cuando cambia
   Stream<SyncState> observarEstadoSincronizacion();

@@ -19,7 +19,7 @@ class PokemonLocalDataSource {
   final AppDatabase _db;
 
   // Catálogo completo en un solo join, se actualiza solo cuando cambia la base
-  Stream<List<PokemonWithTypes>> observarCatalogo() {
+  Stream<List<PokemonWithTypes>> observarCatalogo({String busqueda = ''}) {
     final query =
         _db.select(_db.pokemons).join([
           // trae el pokemon aunque no tenga tipos
@@ -35,6 +35,12 @@ class PokemonLocalDataSource {
           OrderingTerm.asc(_db.pokemons.nationalDexNumber),
           OrderingTerm.asc(_db.pokemonTypes.slot),
         ]);
+
+    // Si hay texto, solo trae los Pokemon que lo tengan en el nombre
+    // LIKE con % antes y despues busca el texto en cualquier parte
+    if (busqueda.isNotEmpty) {
+      query.where(_db.pokemons.name.like('%$busqueda%'));
+    }
 
     return query.watch().map(_agrupar);
   }
