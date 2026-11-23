@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart';
+
+import '../core/theme/app_theme.dart';
 
 import '../features/pokemon/presentation/pages/catalog_screen.dart';
 
@@ -11,7 +12,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Pokédex',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
+      theme: construirTema(),
       home: const CatalogScreen(),
     );
   }

@@ -7,6 +7,8 @@ import '../providers/catalog_state.dart';
 import '../widgets/pokemon_card.dart';
 import '../../../../core/network/connectivity_monitor.dart';
 import '../../../../core/widgets/connectivity_indicator.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/sakura.dart';
 
 // Pantalla del catálogo, solo dibuja según el estado que recibe
 class CatalogPage extends StatelessWidget {
@@ -37,18 +39,30 @@ class CatalogPage extends StatelessWidget {
         },
         child: CustomScrollView(
           slivers: [
-        SliverAppBar.large(
-        title: const Text(
-          'Pokédex',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ConnectivityIndicator(monitor: monitor),
-          ),
-        ],
-      ),
+            SliverAppBar.large(
+              title: Row(
+                children: [
+                  const Text(
+                    'Pokédex',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(width: 8),
+                  // Línea rosa que termina en un ramito de sakuras
+                  Expanded(child: Container(height: 2, color: Paleta.rosa)),
+                  // Con texto muy grande el ramito se quita para que el título quepa (RNF-ACC-04)
+                  if (MediaQuery.textScalerOf(context).scale(1) < 1.4) ...[
+                    const SizedBox(width: 4),
+                    const RamoSakura(escala: 0.5),
+                  ],
+                ],
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: ConnectivityIndicator(monitor: monitor),
+                ),
+              ],
+            ),
             // El switch es exhaustivo porque CatalogState es sealed
             switch (estado) {
               CatalogLoading() => const SliverFillRemaining(
@@ -62,15 +76,17 @@ class CatalogPage extends StatelessWidget {
               CatalogEmpty() => SliverFillRemaining(
                 hasScrollBody: false,
                 child: EmptyState(
-                  mensaje:
-                  'Todavía no hay Pokémon guardados. Conéctate a internet para descargar el catálogo.',
+                  mensaje: 'Todavía no hay Pokémon guardados. Conéctate a internet para descargar el catálogo.',
                   textoAccion: 'Actualizar',
                   alAccionar: alReintentar,
                 ),
               ),
-              CatalogError(fallo:final failure) => SliverFillRemaining(
+              CatalogError(fallo: final failure) => SliverFillRemaining(
                 hasScrollBody: false,
-                child: ErrorState(mensaje: failure.mensaje, alReintentar: alReintentar),
+                child: ErrorState(
+                  mensaje: failure.mensaje,
+                  alReintentar: alReintentar,
+                ),
               ),
               CatalogSuccess(:final pokemons) => _PokemonGrid(
                 pokemons: pokemons,
@@ -105,7 +121,7 @@ class _PokemonGrid extends StatelessWidget {
         ),
         // Solo se construyen las tarjetas visibles
         delegate: SliverChildBuilderDelegate(
-              (_, i) => PokemonCard(pokemon: pokemons[i]),
+          (_, i) => PokemonCard(pokemon: pokemons[i]),
           childCount: pokemons.length,
         ),
       ),

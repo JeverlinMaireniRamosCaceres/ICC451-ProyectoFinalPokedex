@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'sakura.dart';
+
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -25,6 +27,8 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const RamoSakura(),
+            const SizedBox(height: 8),
             ExcludeSemantics(
               child: Icon(icono, size: 64, color: colores.outline),
             ),

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'sakura.dart';
+
 // Error comprensible con la opción «Reintentar»
 class ErrorState extends StatelessWidget {
-  const ErrorState({super.key, required this.mensaje, required this.alReintentar});
+  const ErrorState({
+    super.key,
+    required this.mensaje,
+    required this.alReintentar,
+  });
 
   final String mensaje;
   final VoidCallback alReintentar;
@@ -17,6 +23,8 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const RamoSakura(),
+            const SizedBox(height: 8),
             ExcludeSemantics(
               child: Icon(Icons.error_outline, size: 64, color: colores.error),
             ),
