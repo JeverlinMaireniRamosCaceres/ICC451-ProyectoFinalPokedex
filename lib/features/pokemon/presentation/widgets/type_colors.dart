@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_theme.dart';
+
 // Color de cada tipo, la API manda los nombres en minúscula
 const _coloresTipo = <String, Color>{
   'normal': Color(0xFFA8A77A),
@@ -22,5 +24,20 @@ const _coloresTipo = <String, Color>{
   'fairy': Color(0xFFD685AD),
 };
 
-// Si llega un tipo desconocido no se rompe, usa un gris
-Color colorDeTipo(String nombre) => _coloresTipo[nombre] ?? Colors.blueGrey;
+// Si llega un tipo desconocido no se rompe, usa un gris claro
+Color colorDeTipo(String nombre) {
+  return _coloresTipo[nombre] ?? const Color(0xFFB0BEC5);
+}
+
+// Texto del chip: tinta oscura sobre los colores claros y blanco sobre los oscuros
+// Con la luminancia se separan bien los dos grupos y todos quedan sobre 5:1 (RNF-ACC-02)
+Color colorTextoSobre(Color fondo) {
+  return fondo.computeLuminance() > 0.2 ? Paleta.tinta : Paleta.texto;
+}
+
+// Los tipos oscuros se pierden como borde sobre la superficie oscura
+// Se mezclan con blanco para que se vean, los demás quedan igual
+Color colorBordeTipo(Color color) {
+  if (color.computeLuminance() >= 0.2) return color;
+  return Color.lerp(color, Colors.white, 0.35)!;
+}

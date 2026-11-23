@@ -35,22 +35,22 @@ class ConnectivityIndicator extends StatelessWidget {
           case ConnectivityStatus.conectado:
             mensaje = 'Conectado';
             icono = Icons.wifi;
-            color = Colors.green.shade800;
+            color = Colors.green.shade300;
 
           case ConnectivityStatus.sinConexion:
             mensaje = 'Sin conexión';
             icono = Icons.wifi_off;
-            color = Colors.red.shade800;
+            color = Colors.red.shade300;
 
           case ConnectivityStatus.servicioNoDisponible:
             mensaje = 'Servicio no disponible';
             icono = Icons.cloud_off;
-            color = Colors.orange.shade900;
+            color = Colors.orange.shade300;
 
           case ConnectivityStatus.sincronizando:
             mensaje = 'Sincronizando';
             icono = Icons.sync;
-            color = Colors.blue.shade800;
+            color = Colors.blue.shade300;
         }
 
         return Semantics(
