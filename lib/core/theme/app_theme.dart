@@ -60,5 +60,25 @@ ThemeData construirTema() {
         shape: forma,
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: Paleta.superficie,
+      indicatorColor: Paleta.rosa,
+      // Esquinas casi rectas, igual que el resto
+      indicatorShape: forma,
+      iconTheme: WidgetStateProperty.resolveWith((estados) {
+        final elegido = estados.contains(WidgetState.selected);
+        return IconThemeData(
+          color: elegido ? Paleta.tinta : Paleta.textoSecundario,
+        );
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((estados) {
+        final elegido = estados.contains(WidgetState.selected);
+        return TextStyle(
+          fontSize: 12,
+          fontWeight: elegido ? FontWeight.w700 : FontWeight.w400,
+          color: Paleta.texto,
+        );
+      }),
+    ),
   );
 }

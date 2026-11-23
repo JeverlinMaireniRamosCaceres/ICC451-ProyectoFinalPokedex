@@ -42,21 +42,31 @@ class CatalogPage extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             SliverAppBar.large(
-              title: Row(
-                children: [
-                  const Text(
-                    'Pokédex',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(width: 8),
-                  // Línea rosa que termina en un ramito de sakuras
-                  Expanded(child: Container(height: 2, color: Paleta.rosa)),
-                  // Con texto muy grande el ramito se quita para que el título quepa (RNF-ACC-04)
-                  if (MediaQuery.textScalerOf(context).scale(1) < 1.4) ...[
-                    const SizedBox(width: 4),
-                    const RamoSakura(escala: 0.5),
-                  ],
-                ],
+              title: LayoutBuilder(
+                  builder: (context, restricciones) {
+                    final ancho = restricciones.maxWidth;
+                    final hayLinea = ancho > 170;
+                    final haySakura = ancho > 260 &&
+                        MediaQuery.textScalerOf(context).scale(1) < 1.4;
+                    return Row(
+                      children: [
+                        const Text(
+                          'Pokédex',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        if (hayLinea) ...[
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(height: 2, color: Paleta.rosa),
+                          ),
+                        ],
+                        if (haySakura) ...[
+                          const SizedBox(width: 4),
+                          const RamoSakura(escala: 0.5),
+                        ],
+                      ],
+                    );
+                  },
               ),
               actions: [
                 Padding(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 
-import '../features/pokemon/presentation/pages/catalog_screen.dart';
+import 'main_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,7 +13,7 @@ class App extends StatelessWidget {
       title: 'Pokédex',
       debugShowCheckedModeBanner: false,
       theme: construirTema(),
-      home: const CatalogScreen(),
+      home: const MainScreen(),
     );
   }
 }
