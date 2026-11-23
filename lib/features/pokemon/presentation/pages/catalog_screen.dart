@@ -43,6 +43,7 @@ class CatalogScreen extends ConsumerWidget {
       alCambiarGeneracion: cambiarFiltros.cambiarGeneracion,
       alCambiarOrden: cambiarFiltros.cambiarOrden,
       busqueda: ref.read(busquedaProvider),
+      catalogoParcial: ref.watch(catalogoParcialProvider),
     );
   }
 
