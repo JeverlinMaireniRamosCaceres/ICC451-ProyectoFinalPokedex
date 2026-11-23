@@ -10,6 +10,7 @@ import '../../domain/repositories/pokemon_repository.dart';
 import 'catalog_state.dart';
 import '../../../../core/network/connectivity_monitor.dart';
 import '../../data/sync/pokemon_sync_coordinator.dart';
+import 'dart:async';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -47,9 +48,36 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   );
 });
 
+// Guarda el texto de busqueda
+// Espera 400 ms sin que el usuario escriba antes de buscar (debounce)
+// asi no se hace una consulta por cada letra
+class BusquedaNotifier extends Notifier<String> {
+  Timer? _espera;
+
+  @override
+  String build() {
+    ref.onDispose(() => _espera?.cancel());
+    return '';
+  }
+
+  void escribir(String texto) {
+    _espera?.cancel();
+    _espera = Timer(const Duration(milliseconds: 400), () {
+      state = texto.trim().toLowerCase();
+    });
+  }
+}
+
+final busquedaProvider = NotifierProvider<BusquedaNotifier, String>(
+  BusquedaNotifier.new,
+);
+
 // El Stream que viene de la base local, se actualiza solo
 final catalogStreamProvider = StreamProvider<List<Pokemon>>((ref) {
-  return ref.watch(pokemonRepositoryProvider).observarCatalogo();
+  final busqueda = ref.watch(busquedaProvider);
+  return ref
+      .watch(pokemonRepositoryProvider)
+      .observarCatalogo(busqueda: busqueda);
 });
 
 // El estado del sync, también viene de la base local
@@ -62,9 +90,11 @@ final catalogStateProvider = Provider<CatalogState>((ref) {
   final catalogo = ref.watch(catalogStreamProvider);
   // Mientras no llegue el estado se asume que el sync todavía no empezó
   final sincronizacion = ref.watch(syncStateProvider).value ?? SyncState.inactivo;
+  final busqueda = ref.watch(busquedaProvider);
 
   return switch (catalogo) {
-    AsyncData(:final value) when value.isNotEmpty => CatalogSuccess(value),
+    AsyncData(:final value) when value.isNotEmpty || busqueda.isNotEmpty =>
+        CatalogSuccess(value),
     // Sin datos, el estado del sync decide qué se le explica al usuario
     AsyncData() => switch (sincronizacion) {
       SyncState.inactivo || SyncState.sincronizando => const CatalogLoading(),

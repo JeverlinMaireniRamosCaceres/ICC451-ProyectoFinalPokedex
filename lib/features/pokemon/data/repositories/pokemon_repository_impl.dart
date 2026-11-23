@@ -13,8 +13,10 @@ class PokemonRepositoryImpl implements PokemonRepository {
   final PokemonSyncCoordinator _coordinadorSincronizacion; // para hacer la sincronizacion con la API
 
   @override
-  Stream<List<Pokemon>> observarCatalogo() {
-    return _local.observarCatalogo().map((filas) => filas.aEntidades());
+  Stream<List<Pokemon>> observarCatalogo({String busqueda = ''}) {
+    return _local
+        .observarCatalogo(busqueda: busqueda)
+        .map((filas) => filas.aEntidades());
   }
 
   @override

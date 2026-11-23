@@ -18,12 +18,14 @@ class CatalogPage extends StatelessWidget {
     required this.alReintentar,
     required this.alCargarMas,
     required this.monitor,
+    required this.alBuscar,
   });
 
   final CatalogState estado;
   final VoidCallback alReintentar;
   final VoidCallback alCargarMas;
   final ConnectivityMonitor monitor;
+  final ValueChanged<String> alBuscar;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,19 @@ class CatalogPage extends StatelessWidget {
                 ),
               ],
             ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: TextField(
+                  onChanged: alBuscar,
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar por nombre',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ),
             // El switch es exhaustivo porque CatalogState es sealed
             switch (estado) {
               CatalogLoading() => const SliverFillRemaining(
@@ -76,7 +91,8 @@ class CatalogPage extends StatelessWidget {
               CatalogEmpty() => SliverFillRemaining(
                 hasScrollBody: false,
                 child: EmptyState(
-                  mensaje: 'Todavía no hay Pokémon guardados. Conéctate a internet para descargar el catálogo.',
+                  mensaje:
+                  'Todavía no hay Pokémon guardados. Conéctate a internet para descargar el catálogo.',
                   textoAccion: 'Actualizar',
                   alAccionar: alReintentar,
                 ),
@@ -86,6 +102,14 @@ class CatalogPage extends StatelessWidget {
                 child: ErrorState(
                   mensaje: failure.mensaje,
                   alReintentar: alReintentar,
+                ),
+              ),
+              CatalogSuccess(:final pokemons) when pokemons.isEmpty =>
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: EmptyState(
+                  mensaje: 'No se encontró ningún Pokémon con ese nombre',
+                  icono: Icons.search_off,
                 ),
               ),
               CatalogSuccess(:final pokemons) => _PokemonGrid(
@@ -121,7 +145,7 @@ class _PokemonGrid extends StatelessWidget {
         ),
         // Solo se construyen las tarjetas visibles
         delegate: SliverChildBuilderDelegate(
-          (_, i) => PokemonCard(pokemon: pokemons[i]),
+              (_, i) => PokemonCard(pokemon: pokemons[i]),
           childCount: pokemons.length,
         ),
       ),
