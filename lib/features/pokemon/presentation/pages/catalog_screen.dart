@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/pokemon_providers.dart';
 import 'catalog_page.dart';
 import '../../../../core/errors/failure.dart';
+import '../widgets/pokemon_card.dart';
+import 'detail_screen.dart';
 
 // Es el unico punto donde el catalogo se conecta con Riverpod
 // Lee el estado y las acciones de los providers y se los pasa a CatalogPage, que se encarga de mostrarlo
@@ -44,6 +46,14 @@ class CatalogScreen extends ConsumerWidget {
       alCambiarOrden: cambiarFiltros.cambiarOrden,
       busqueda: ref.read(busquedaProvider),
       catalogoParcial: ref.watch(catalogoParcialProvider),
+      alAbrirDetalle: (pokemon) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DetailScreen(
+            pokemon: pokemon,
+            etiquetaHero: etiquetaHeroCatalogo(pokemon.id),
+          ),
+        ),
+      ),
     );
   }
 
