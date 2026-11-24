@@ -29,6 +29,7 @@ class CatalogPage extends StatelessWidget {
     required this.alCambiarOrden,
     required this.busqueda,
     required this.catalogoParcial,
+    required this.alAbrirDetalle,
   });
 
   final CatalogState estado;
@@ -45,6 +46,7 @@ class CatalogPage extends StatelessWidget {
   // texto con el que empieza el buscador, el de la ultima vez
   final String busqueda;
   final bool catalogoParcial;
+  final ValueChanged<Pokemon> alAbrirDetalle;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +175,7 @@ class CatalogPage extends StatelessWidget {
               ),
               CatalogSuccess(:final pokemons) => _PokemonGrid(
                 pokemons: pokemons,
+                alAbrirDetalle: alAbrirDetalle,
               ),
             },
           ],
@@ -183,9 +186,10 @@ class CatalogPage extends StatelessWidget {
 }
 
 class _PokemonGrid extends StatelessWidget {
-  const _PokemonGrid({required this.pokemons});
+  const _PokemonGrid({required this.pokemons, required this.alAbrirDetalle});
 
   final List<Pokemon> pokemons;
+  final ValueChanged<Pokemon> alAbrirDetalle;
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +208,13 @@ class _PokemonGrid extends StatelessWidget {
         ),
         // Solo se construyen las tarjetas visibles
         delegate: SliverChildBuilderDelegate(
-              (_, i) => PokemonCard(pokemon: pokemons[i]),
+              (_, i) {
+            final pokemon = pokemons[i];
+            return PokemonCard(
+              pokemon: pokemon,
+              alTocar: () => alAbrirDetalle(pokemon),
+            );
+          },
           childCount: pokemons.length,
         ),
       ),

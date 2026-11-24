@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/texto.dart';
 import '../../../../core/widgets/pokemon_image.dart';
 import '../../domain/entities/pokemon.dart';
+import 'chip_tipo.dart';
 import 'type_colors.dart';
+
+// Etiqueta de la animación Hero, lleva el prefijo del catálogo para que no choque con la de favoritos
+String etiquetaHeroCatalogo(int id) => 'catalogo-$id';
 
 // Ficha de cada pokemon en el catálogo
 // Borde y sombra con el color de su tipo principal, esquinas de escáner en el sprite
@@ -19,10 +24,10 @@ class PokemonCard extends StatelessWidget {
     final temaTexto = Theme.of(context).textTheme;
     final esquinas = BorderRadius.circular(6);
 
-    final nombre = _capitalizar(pokemon.name);
+    final nombre = capitalizar(pokemon.name);
     final numero = '#${pokemon.nationalDexNumber.toString().padLeft(4, '0')}';
     final nombresTipos = pokemon.types
-        .map((t) => _capitalizar(t.name))
+        .map((t) => capitalizar(t.name))
         .toList();
 
     final colorBorde = pokemon.types.isEmpty
@@ -68,10 +73,14 @@ class PokemonCard extends StatelessWidget {
                         // El sprite tiene un borde transparente grande, por eso se agranda
                         child: Transform.scale(
                           scale: 1.35,
-                          child: PokemonImage(
-                            url: pokemon.imageUrl,
-                            size: 110,
-                            filterQuality: FilterQuality.none,
+                          // La imagen vuela hacia el detalle con esta etiqueta
+                          child: Hero(
+                            tag: etiquetaHeroCatalogo(pokemon.id),
+                            child: PokemonImage(
+                              url: pokemon.imageUrl,
+                              size: 110,
+                              filterQuality: FilterQuality.none,
+                            ),
                           ),
                         ),
                       ),
@@ -94,8 +103,8 @@ class PokemonCard extends StatelessWidget {
                     spacing: 6,
                     runSpacing: 4,
                     children: pokemon.types.map((t) {
-                      return _ChipTipo(
-                        etiqueta: _capitalizar(t.name),
+                      return ChipTipo(
+                        etiqueta: capitalizar(t.name),
                         color: colorDeTipo(t.name),
                       );
                     }).toList(),
@@ -104,32 +113,6 @@ class PokemonCard extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Etiqueta del tipo con el color del tipo de fondo y texto legible encima
-class _ChipTipo extends StatelessWidget {
-  const _ChipTipo({required this.etiqueta, required this.color});
-
-  final String etiqueta;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        etiqueta,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: colorTextoSobre(color),
         ),
       ),
     );
@@ -171,9 +154,4 @@ class _EsquinasEscaner extends CustomPainter {
   // Solo se vuelve a dibujar si cambia el color
   @override
   bool shouldRepaint(_EsquinasEscaner anterior) => anterior.color != color;
-}
-
-// La API manda los nombres en minúscula
-String _capitalizar(String s) {
-  return s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 }
