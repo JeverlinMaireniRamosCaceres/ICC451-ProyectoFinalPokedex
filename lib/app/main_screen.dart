@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/widgets/empty_state.dart';
 import '../features/pokemon/presentation/pages/catalog_screen.dart';
+import '../features/pokemon/presentation/widgets/indicador_conexion.dart';
 
 // Pantalla principal, tiene la barra de abajo y las pestañas
 class MainScreen extends StatefulWidget {
@@ -66,6 +67,7 @@ class _Proximamente extends StatelessWidget {
           titulo,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
+        actions: const [IndicadorConexion()]
       ),
       body: const EmptyState(mensaje: 'Esta sección estará disponible pronto'),
     );
