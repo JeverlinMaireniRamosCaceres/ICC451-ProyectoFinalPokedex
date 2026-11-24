@@ -9,6 +9,7 @@ import '../../domain/entities/pokemon_stat.dart';
 import '../widgets/chip_tipo.dart';
 import '../widgets/indicador_conexion.dart';
 import '../widgets/type_colors.dart';
+import '../../domain/type_effectiveness.dart';
 
 // La API manda los nombres de las estadísticas en inglés
 const _nombresEstadisticas = {
@@ -57,15 +58,10 @@ class DetailPage extends StatelessWidget {
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            sliver: SliverList.list(
-              children: [
-                _PanelEstadisticas(estadisticas: estadisticas),
-                const SizedBox(height: 16),
-                _PanelDatos(detalle: detalle),
-              ],
-            ),
+          _SeccionesDetalle(
+            pokemon: pokemon,
+            detalle: detalle,
+            estadisticas: estadisticas,
           ),
         ],
       ),
@@ -322,7 +318,7 @@ class _PanelDatos extends StatelessWidget {
             valor: d.gruposHuevo.isEmpty
                 ? 'Ninguno'
                 : d.gruposHuevo
-                .map((g) => capitalizar(g.replaceAll('-', ' ')))
+                .map(nombreLegible)
                 .join(', '),
           ),
         ],
@@ -360,5 +356,284 @@ class _Dato extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+// Habilidades con la marca Oculta y el efecto resumido
+class _PanelHabilidades extends StatelessWidget {
+  const _PanelHabilidades({required this.detalle});
+
+  final PokemonDetail? detalle;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = detalle;
+    final Widget contenido;
+
+    if (d == null) {
+      contenido = const Text(
+        'El detalle todavía no se ha descargado, aparecerá cuando haya conexión',
+      );
+    } else if (d.habilidades.isEmpty) {
+      contenido = const Text('No tiene habilidades registradas');
+    } else {
+      contenido = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final h in d.habilidades) _FilaHabilidad(habilidad: h),
+        ],
+      );
+    }
+
+    return _Panel(titulo: 'Habilidades', hijo: contenido);
+  }
+}
+
+class _FilaHabilidad extends StatelessWidget {
+  const _FilaHabilidad({required this.habilidad});
+
+  final PokemonAbility habilidad;
+
+  @override
+  Widget build(BuildContext context) {
+    final efecto = habilidad.efecto;
+
+    return MergeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  nombreLegible(habilidad.nombre),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                if (habilidad.esOculta) const _EtiquetaOculta(),
+              ],
+            ),
+            if (efecto != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                efecto,
+                style: const TextStyle(color: Paleta.textoSecundario),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Marca de habilidad oculta, con icono y texto para no depender solo del color
+class _EtiquetaOculta extends StatelessWidget {
+  const _EtiquetaOculta();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Paleta.rosa, width: 1.5),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.visibility_off, size: 14, color: Paleta.rosa),
+          SizedBox(width: 4),
+          Text(
+            'Oculta',
+            style: TextStyle(
+              color: Paleta.rosa,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Cuánto daño recibe de cada tipo de ataque, agrupado por multiplicador
+class _PanelMatchups extends StatelessWidget {
+  const _PanelMatchups({required this.tipos});
+
+  final List<String> tipos;
+
+  static const _grupos = [
+    (4.0, 'Muy débil (×4)'),
+    (2.0, 'Débil (×2)'),
+    (0.5, 'Resiste (×0.5)'),
+    (0.25, 'Resiste mucho (×0.25)'),
+    (0.0, 'Inmune (×0)'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final efectividad = calcularEfectividad(tipos);
+
+    return _Panel(
+      titulo: 'Debilidades y resistencias',
+      hijo: tipos.isEmpty
+          ? const Text('Sin información de tipos')
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final g in _grupos)
+            _GrupoMatchup(
+              titulo: g.$2,
+              atacantes: efectividad.entries
+                  .where((e) => e.value == g.$1)
+                  .map((e) => e.key)
+                  .toList(),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GrupoMatchup extends StatelessWidget {
+  const _GrupoMatchup({required this.titulo, required this.atacantes});
+
+  final String titulo;
+  final List<String> atacantes;
+
+  @override
+  Widget build(BuildContext context) {
+    // Un grupo sin tipos no se muestra
+    if (atacantes.isEmpty) return const SizedBox.shrink();
+
+    final nombres = atacantes.map(capitalizar).toList();
+
+    // El lector de pantalla lee el grupo completo en una sola frase
+    return Semantics(
+      label: '$titulo: ${nombres.join(', ')}',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              titulo,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Paleta.textoSecundario,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final t in atacantes)
+                  ChipTipo(etiqueta: capitalizar(t), color: colorDeTipo(t)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+// Las secciones del detalle, una por pestaña
+enum _Seccion {
+  info('Info'),
+  combate('Combate'),
+  evolucion('Evolución');
+
+  const _Seccion(this.etiqueta);
+
+  final String etiqueta;
+}
+
+// Pestañas y contenido de la sección elegida
+// La pestaña elegida solo importa a esta pantalla, por eso no necesita provider
+class _SeccionesDetalle extends StatefulWidget {
+  const _SeccionesDetalle({
+    required this.pokemon,
+    required this.detalle,
+    required this.estadisticas,
+  });
+
+  final Pokemon pokemon;
+  final PokemonDetail? detalle;
+  final List<PokemonStat> estadisticas;
+
+  @override
+  State<_SeccionesDetalle> createState() => _SeccionesDetalleState();
+}
+
+class _SeccionesDetalleState extends State<_SeccionesDetalle> {
+  _Seccion _seccion = _Seccion.info;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            // Wrap pasa las pestañas a otra línea si no caben con texto grande
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final s in _Seccion.values)
+                  ChoiceChip(
+                    label: Text(s.etiqueta),
+                    selected: _seccion == s,
+                    onSelected: (_) => setState(() => _seccion = s),
+                    showCheckmark: false,
+                    selectedColor: Paleta.rosa,
+                    backgroundColor: Paleta.superficie,
+                    side: const BorderSide(color: Paleta.borde, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: _seccion == s ? Paleta.tinta : Paleta.texto,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          sliver: SliverList.list(children: _contenido()),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _contenido() {
+    final detalle = widget.detalle;
+
+    return switch (_seccion) {
+      _Seccion.info => [
+        _PanelEstadisticas(estadisticas: widget.estadisticas),
+        const SizedBox(height: 16),
+        _PanelHabilidades(detalle: detalle),
+        const SizedBox(height: 16),
+        _PanelDatos(detalle: detalle),
+      ],
+      _Seccion.combate => [
+        _PanelMatchups(
+          tipos: widget.pokemon.types.map((t) => t.name).toList(),
+        ),
+      ],
+      _Seccion.evolucion => const [
+        _Panel(titulo: 'Evolución', hijo: Text('Próximamente')),
+      ],
+    };
   }
 }
