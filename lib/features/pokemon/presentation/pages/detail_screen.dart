@@ -48,10 +48,13 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
   Widget build(BuildContext context) {
     // El detalle del Pokémon original trae la lista de formas
     final base = ref.watch(detalleProvider(widget.pokemon.id)).value;
+    // Sube cuando regresa la conexión, para que la imagen vuelva a intentar cargar
+    final reintentoImagen = ref.watch(conexionRecuperadaProvider);
 
     // Si no se eligió otra forma es el mismo provider de arriba, no se pide dos veces
     final idActual = _formaElegida ?? widget.pokemon.id;
     final detalleActual = ref.watch(detalleProvider(idActual)).value;
+
 
     final esOriginal = idActual == widget.pokemon.id;
     // Mientras la forma elegida no esté descargada se deja la cabecera original
@@ -62,6 +65,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
     return DetailPage(
       pokemon: pokemon,
       detalle: detalleActual,
+      reintentoImagen: reintentoImagen,
       etiquetaHero: widget.etiquetaHero,
       formas: (base ?? detalleActual)?.formas ?? const <PokemonForm>[],
       nombreBase: widget.pokemon.name,

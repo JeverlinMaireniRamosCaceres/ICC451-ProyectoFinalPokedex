@@ -14,6 +14,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/pokemon_detail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/network/connectivity_status.dart';
 
 // Una sola base para toda la app, se cierra cuando ya nadie la usa
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -225,10 +226,51 @@ final connectivityMonitorProvider = Provider<ConnectivityMonitor>((ref) {
   return monitor;
 });
 
-// Detalle de un Pokemon por su id
+// Hay conexión útil si la API responde, aunque se esté sincronizando
+bool _hayConexion(ConnectivityStatus estado) {
+  return estado == ConnectivityStatus.conectado ||
+      estado == ConnectivityStatus.sincronizando;
+}
+
+// Cuenta las veces que volvió la conexión con la API
+// Quien lo observa se vuelve a ejecutar cuando sube el número
+// Sirve para reintentar lo que falló sin conexión, como el detalle y las imágenes
+class ConexionRecuperadaNotifier extends Notifier<int> {
+  @override
+  int build() {
+    final monitor = ref.watch(connectivityMonitorProvider);
+    var habiaConexion = _hayConexion(monitor.estadoActual);
+
+    // Solo cuenta el paso de sin conexión a con conexión
+    // El cambio entre conectado y sincronizando no es una recuperación
+    final suscripcion = monitor.flujoEstado.listen((estado) {
+      final hayConexion = _hayConexion(estado);
+      if (hayConexion && !habiaConexion) state = state + 1;
+      habiaConexion = hayConexion;
+    });
+    ref.onDispose(suscripcion.cancel);
+
+    return 0;
+  }
+}
+
+final conexionRecuperadaProvider =
+NotifierProvider<ConexionRecuperadaNotifier, int>(
+  ConexionRecuperadaNotifier.new,
+);
+
+/// Detalle de un Pokemon por su id
 // Muestra lo que ya este guardado en la base y al mismo tiempo pide
 // la version de la API, cuando llega se guarda y la pantalla se actualiza sola
-final detalleProvider = StreamProvider.family<PokemonDetail?, int>((ref, id) {
+// autoDispose: al salir de la pantalla se libera, y al volver a entrar se vuelve a pedir
+// Si no, la descarga solo correria la primera vez y fallaria para siempre si fue sin conexion
+final detalleProvider = StreamProvider.autoDispose.family<PokemonDetail?, int>((
+    ref,
+    id,
+    ) {
+  // Al observarlo, el detalle se vuelve a pedir cuando regresa la conexión
+  ref.watch(conexionRecuperadaProvider);
+
   final repositorio = ref.watch(pokemonRepositoryProvider);
 
   unawaited(

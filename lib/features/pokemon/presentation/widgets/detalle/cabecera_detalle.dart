@@ -14,17 +14,24 @@ class CabeceraDetalle extends StatelessWidget {
     super.key,
     required this.pokemon,
     required this.imagen,
+    this.imagenAlternativa,
     required this.etiquetaHero,
     this.esShiny = false,
     this.alCambiarShiny,
+    this.reintentoImagen = 0
+
   });
 
   final Pokemon pokemon;
   final String? imagen;
+  // Se muestra si la imagen principal no se puede cargar, por ejemplo el sprite
+  final String? imagenAlternativa;
   final String etiquetaHero;
   final bool esShiny;
   // null cuando no hay imagen shiny, así no se muestra el alternador
   final ValueChanged<bool>? alCambiarShiny;
+  // Cambia cuando regresa la conexión, así la imagen vuelve a intentar descargarse
+  final int reintentoImagen;
 
 
   @override
@@ -70,7 +77,9 @@ class CabeceraDetalle extends StatelessWidget {
                 child: KeyedSubtree(
                   key: ValueKey(imagen),
                   child: PokemonImage(
+                    key: ValueKey(reintentoImagen),
                     url: imagen,
+                    urlAlternativa: imagenAlternativa,
                     size: 240,
                     semanticLabel: esShiny ? '$nombre shiny' : nombre,
                   ),

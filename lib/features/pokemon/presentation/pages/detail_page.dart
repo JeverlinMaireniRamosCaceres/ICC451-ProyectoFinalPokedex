@@ -29,6 +29,7 @@ class DetailPage extends StatelessWidget {
     required this.alElegirForma,
     required this.esShiny,
     required this.alCambiarShiny,
+    required this.reintentoImagen
   });
 
   final Pokemon pokemon;
@@ -42,6 +43,7 @@ class DetailPage extends StatelessWidget {
   final ValueChanged<int> alElegirForma;
   final bool esShiny;
   final ValueChanged<bool> alCambiarShiny;
+  final int reintentoImagen;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,10 @@ class DetailPage extends StatelessWidget {
     final imagen = verShiny
         ? imagenShiny
         : (detalle?.artwork ?? pokemon.artworkUrl ?? pokemon.imageUrl);
+    // Si el artwork no se puede cargar sin conexión, se usa el sprite, que ya vino con el catálogo
+    final imagenAlternativa = verShiny
+        ? detalle?.spriteShiny
+        : (detalle?.sprite ?? pokemon.imageUrl);
     // Las estadísticas ya vienen con el catálogo, así se ven al instante y sin conexión
     final estadisticas = pokemon.stats.isNotEmpty
         ? pokemon.stats
@@ -72,6 +78,8 @@ class DetailPage extends StatelessWidget {
                 etiquetaHero: etiquetaHero,
                 esShiny: verShiny,
                 alCambiarShiny: hayShiny ? alCambiarShiny : null,
+                imagenAlternativa: imagenAlternativa,
+                reintentoImagen: reintentoImagen,
               ),
             ),
           ),
