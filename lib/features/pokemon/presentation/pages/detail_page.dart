@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/pokemon.dart';
 import '../../domain/entities/pokemon_detail.dart';
 import '../../domain/entities/pokemon_stat.dart';
@@ -11,6 +10,10 @@ import '../widgets/detalle/panel_evolucion.dart';
 import '../widgets/detalle/panel_habilidades.dart';
 import '../widgets/detalle/panel_matchups.dart';
 import '../widgets/indicador_conexion.dart';
+import '../widgets/detalle/chip_opcion.dart';
+import '../widgets/detalle/panel_detalle.dart';
+import '../widgets/detalle/panel_movimientos.dart';
+import '../widgets/detalle/selector_formas.dart';
 
 // Pantalla de detalle, solo dibuja lo que recibe
 class DetailPage extends StatelessWidget {
@@ -19,16 +22,37 @@ class DetailPage extends StatelessWidget {
     required this.pokemon,
     required this.detalle,
     required this.etiquetaHero,
+    required this.formas,
+    required this.nombreBase,
+    required this.idForma,
+    required this.formaPendiente,
+    required this.alElegirForma,
+    required this.esShiny,
+    required this.alCambiarShiny,
   });
 
   final Pokemon pokemon;
   final PokemonDetail? detalle;
   final String etiquetaHero;
+  final List<PokemonForm> formas;
+  final String nombreBase;
+  final int idForma;
+  // true si se eligió una forma que todavía no se ha descargado
+  final bool formaPendiente;
+  final ValueChanged<int> alElegirForma;
+  final bool esShiny;
+  final ValueChanged<bool> alCambiarShiny;
 
   @override
   Widget build(BuildContext context) {
+    // El shiny solo viene en el detalle, sin él no se ofrece el alternador
+    final imagenShiny = detalle?.artworkShiny ?? detalle?.spriteShiny;
+    final hayShiny = imagenShiny != null;
+    final verShiny = esShiny && hayShiny;
     // La imagen oficial si existe, si no el sprite (RF-DET-01)
-    final imagen = detalle?.artwork ?? pokemon.artworkUrl ?? pokemon.imageUrl;
+    final imagen = verShiny
+        ? imagenShiny
+        : (detalle?.artwork ?? pokemon.artworkUrl ?? pokemon.imageUrl);
     // Las estadísticas ya vienen con el catálogo, así se ven al instante y sin conexión
     final estadisticas = pokemon.stats.isNotEmpty
         ? pokemon.stats
@@ -46,13 +70,25 @@ class DetailPage extends StatelessWidget {
                 pokemon: pokemon,
                 imagen: imagen,
                 etiquetaHero: etiquetaHero,
+                esShiny: verShiny,
+                alCambiarShiny: hayShiny ? alCambiarShiny : null,
               ),
+            ),
+          ),
+          // Siempre está en la lista, así las secciones de abajo no cambian de posición
+          SliverToBoxAdapter(
+            child: SelectorFormas(
+              formas: formas,
+              nombreBase: nombreBase,
+              idElegido: idForma,
+              alElegir: alElegirForma,
             ),
           ),
           _SeccionesDetalle(
             pokemon: pokemon,
             detalle: detalle,
             estadisticas: estadisticas,
+            formaPendiente: formaPendiente,
           ),
         ],
       ),
@@ -78,11 +114,13 @@ class _SeccionesDetalle extends StatefulWidget {
     required this.pokemon,
     required this.detalle,
     required this.estadisticas,
+    required this.formaPendiente,
   });
 
   final Pokemon pokemon;
   final PokemonDetail? detalle;
   final List<PokemonStat> estadisticas;
+  final bool formaPendiente;
 
   @override
   State<_SeccionesDetalle> createState() => _SeccionesDetalleState();
@@ -104,51 +142,91 @@ class _SeccionesDetalleState extends State<_SeccionesDetalle> {
               runSpacing: 4,
               children: [
                 for (final s in _Seccion.values)
-                  ChoiceChip(
-                    label: Text(s.etiqueta),
-                    selected: _seccion == s,
-                    onSelected: (_) => setState(() => _seccion = s),
-                    showCheckmark: false,
-                    selectedColor: Paleta.rosa,
-                    backgroundColor: Paleta.superficie,
-                    side: const BorderSide(color: Paleta.borde, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: _seccion == s ? Paleta.tinta : Paleta.texto,
-                    ),
+                  ChipOpcion(
+                    etiqueta: s.etiqueta,
+                    elegido: _seccion == s,
+                    alElegir: () => setState(() => _seccion = s),
                   ),
               ],
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          sliver: SliverList.list(children: _contenido()),
-        ),
+        ..._contenido(),
       ],
     );
   }
 
+  // Cada sección devuelve slivers, así la lista de movimientos solo construye lo que se ve
   List<Widget> _contenido() {
     final detalle = widget.detalle;
+    const margen = EdgeInsets.fromLTRB(16, 0, 16, 24);
+
+    // Si la forma elegida no está descargada no se muestran datos de otra forma
+    if (widget.formaPendiente) {
+      return const [
+        SliverPadding(
+          padding: margen,
+          sliver: SliverToBoxAdapter(
+            child: PanelDetalle(
+              titulo: 'Forma',
+              hijo: Text(
+                'Esta forma todavía no se ha descargado, aparecerá cuando haya conexión',
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
 
     return switch (_seccion) {
       _Seccion.info => [
-        PanelEstadisticas(estadisticas: widget.estadisticas),
-        const SizedBox(height: 16),
-        PanelHabilidades(detalle: detalle),
-        const SizedBox(height: 16),
-        PanelDatos(detalle: detalle),
-      ],
-      _Seccion.combate => [
-        PanelMatchups(
-          tipos: widget.pokemon.types.map((t) => t.name).toList(),
+        SliverPadding(
+          padding: margen,
+          sliver: SliverList.list(
+            children: [
+              PanelEstadisticas(estadisticas: widget.estadisticas),
+              const SizedBox(height: 16),
+              PanelHabilidades(detalle: detalle),
+              const SizedBox(height: 16),
+              PanelDatos(detalle: detalle),
+            ],
+          ),
         ),
       ],
-      _Seccion.evolucion => [PanelEvolucion(detalle: detalle)],
+      _Seccion.combate => [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          sliver: SliverList.list(
+            children: [
+              PanelMatchups(
+                tipos: widget.pokemon.types.map((t) => t.name).toList(),
+              ),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: margen,
+          sliver: detalle == null
+              ? const SliverToBoxAdapter(
+            child: PanelDetalle(
+              titulo: 'Movimientos',
+              hijo: Text(
+                'El detalle todavía no se ha descargado, aparecerá cuando haya conexión',
+              ),
+            ),
+          )
+              : PanelMovimientos(
+            key: ValueKey(detalle.id),
+            movimientos: detalle.movimientos,
+          ),
+        ),
+      ],
+      _Seccion.evolucion => [
+        SliverPadding(
+          padding: margen,
+          sliver: SliverList.list(children: [PanelEvolucion(detalle: detalle)]),
+        ),
+      ],
     };
   }
 }

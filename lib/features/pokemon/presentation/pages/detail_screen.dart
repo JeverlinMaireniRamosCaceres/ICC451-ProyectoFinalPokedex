@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/pokemon.dart';
+import '../../domain/entities/pokemon_detail.dart';
 import '../providers/pokemon_providers.dart';
 import 'detail_page.dart';
 
 // Lee el detalle guardado y se lo pasa a DetailPage
-class DetailScreen extends ConsumerWidget {
+// Guarda la forma elegida, que solo importa mientras esta pantalla está abierta
+class DetailScreen extends ConsumerStatefulWidget {
   const DetailScreen({
     super.key,
     required this.pokemon,
@@ -17,15 +19,57 @@ class DetailScreen extends ConsumerWidget {
   final String etiquetaHero;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Es null mientras el detalle no se ha descargado
-    // La cabecera se dibuja igual con lo que ya hay del catálogo
-    final detalle = ref.watch(detalleProvider(pokemon.id)).value;
+  ConsumerState<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends ConsumerState<DetailScreen> {
+  // null mientras se ve la forma original
+  int? _formaElegida;
+  // Si se ve la imagen shiny, el alternador de la cabecera lo cambia
+  bool _shiny = false;
+
+  // Las formas no están en el catálogo, así que se arma un Pokemon con su detalle
+  // para reusar la cabecera, las estadísticas y las debilidades
+  // baseStatTotal queda en 0 porque el detalle no lo usa, la suma se calcula en el panel
+  Pokemon _pokemonDeForma(PokemonDetail forma) {
+    return Pokemon(
+      id: forma.id,
+      name: forma.nombre,
+      nationalDexNumber: widget.pokemon.nationalDexNumber,
+      types: forma.tipos,
+      imageUrl: forma.sprite,
+      artworkUrl: forma.artwork,
+      generationId: widget.pokemon.generationId,
+      stats: forma.estadisticas,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // El detalle del Pokémon original trae la lista de formas
+    final base = ref.watch(detalleProvider(widget.pokemon.id)).value;
+
+    // Si no se eligió otra forma es el mismo provider de arriba, no se pide dos veces
+    final idActual = _formaElegida ?? widget.pokemon.id;
+    final detalleActual = ref.watch(detalleProvider(idActual)).value;
+
+    final esOriginal = idActual == widget.pokemon.id;
+    // Mientras la forma elegida no esté descargada se deja la cabecera original
+    final pokemon = (esOriginal || detalleActual == null)
+        ? widget.pokemon
+        : _pokemonDeForma(detalleActual);
 
     return DetailPage(
       pokemon: pokemon,
-      detalle: detalle,
-      etiquetaHero: etiquetaHero,
+      detalle: detalleActual,
+      etiquetaHero: widget.etiquetaHero,
+      formas: (base ?? detalleActual)?.formas ?? const <PokemonForm>[],
+      nombreBase: widget.pokemon.name,
+      idForma: idActual,
+      formaPendiente: !esOriginal && detalleActual == null,
+      alElegirForma: (id) => setState(() => _formaElegida = id),
+      esShiny: _shiny,
+      alCambiarShiny: (valor) => setState(() => _shiny = valor),
     );
   }
 }
