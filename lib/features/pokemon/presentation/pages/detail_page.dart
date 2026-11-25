@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/pokemon.dart';
 import '../../domain/entities/pokemon_detail.dart';
 import '../../domain/entities/pokemon_stat.dart';
@@ -11,6 +10,9 @@ import '../widgets/detalle/panel_evolucion.dart';
 import '../widgets/detalle/panel_habilidades.dart';
 import '../widgets/detalle/panel_matchups.dart';
 import '../widgets/indicador_conexion.dart';
+import '../widgets/detalle/chip_opcion.dart';
+import '../widgets/detalle/panel_detalle.dart';
+import '../widgets/detalle/panel_movimientos.dart';
 
 // Pantalla de detalle, solo dibuja lo que recibe
 class DetailPage extends StatelessWidget {
@@ -104,51 +106,71 @@ class _SeccionesDetalleState extends State<_SeccionesDetalle> {
               runSpacing: 4,
               children: [
                 for (final s in _Seccion.values)
-                  ChoiceChip(
-                    label: Text(s.etiqueta),
-                    selected: _seccion == s,
-                    onSelected: (_) => setState(() => _seccion = s),
-                    showCheckmark: false,
-                    selectedColor: Paleta.rosa,
-                    backgroundColor: Paleta.superficie,
-                    side: const BorderSide(color: Paleta.borde, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: _seccion == s ? Paleta.tinta : Paleta.texto,
-                    ),
+                  ChipOpcion(
+                    etiqueta: s.etiqueta,
+                    elegido: _seccion == s,
+                    alElegir: () => setState(() => _seccion = s),
                   ),
               ],
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          sliver: SliverList.list(children: _contenido()),
-        ),
+        ..._contenido(),
       ],
     );
   }
 
+  // Cada sección devuelve slivers, así la lista de movimientos solo construye lo que se ve
   List<Widget> _contenido() {
     final detalle = widget.detalle;
+    const margen = EdgeInsets.fromLTRB(16, 0, 16, 24);
 
     return switch (_seccion) {
       _Seccion.info => [
-        PanelEstadisticas(estadisticas: widget.estadisticas),
-        const SizedBox(height: 16),
-        PanelHabilidades(detalle: detalle),
-        const SizedBox(height: 16),
-        PanelDatos(detalle: detalle),
-      ],
-      _Seccion.combate => [
-        PanelMatchups(
-          tipos: widget.pokemon.types.map((t) => t.name).toList(),
+        SliverPadding(
+          padding: margen,
+          sliver: SliverList.list(
+            children: [
+              PanelEstadisticas(estadisticas: widget.estadisticas),
+              const SizedBox(height: 16),
+              PanelHabilidades(detalle: detalle),
+              const SizedBox(height: 16),
+              PanelDatos(detalle: detalle),
+            ],
+          ),
         ),
       ],
-      _Seccion.evolucion => [PanelEvolucion(detalle: detalle)],
+      _Seccion.combate => [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          sliver: SliverList.list(
+            children: [
+              PanelMatchups(
+                tipos: widget.pokemon.types.map((t) => t.name).toList(),
+              ),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: margen,
+          sliver: detalle == null
+              ? const SliverToBoxAdapter(
+            child: PanelDetalle(
+              titulo: 'Movimientos',
+              hijo: Text(
+                'El detalle todavía no se ha descargado, aparecerá cuando haya conexión',
+              ),
+            ),
+          )
+              : PanelMovimientos(movimientos: detalle.movimientos),
+        ),
+      ],
+      _Seccion.evolucion => [
+        SliverPadding(
+          padding: margen,
+          sliver: SliverList.list(children: [PanelEvolucion(detalle: detalle)]),
+        ),
+      ],
     };
   }
 }
