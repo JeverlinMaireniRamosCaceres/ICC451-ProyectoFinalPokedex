@@ -36,6 +36,9 @@ class PokemonSyncCoordinator {
   // se piden 20 pokemons por pagina
   static const int tamanoPagina = 20;
 
+  // en la revision se piden 100 por peticion para hacer menos llamadas a la API
+  static const int tamanoRevision = 100;
+
   final PokemonRemoteDataSource _remoto;
   final PokemonLocalDataSource _local;
   final AppDatabase _db;
@@ -70,6 +73,32 @@ class PokemonSyncCoordinator {
       final metadatos = await _leerMetadatos();
       if (metadatos?.status == SyncStatus.complete) return;
       await _sincronizarPagina(offset: metadatos?.nextOffset ?? 0);
+    });
+  }
+
+  /// Vuelve a descargar todo lo que ya esta guardado y lo sobrescribe
+  /// Si un dato del catalogo se cambio en la base local, se queda igual que en la pokeapi
+  /// No mueve el avance, solo restaura lo que ya estaba descargado
+  /// Los favoritos no se modifican porque estan en otra tabla
+  Future<void> revisarCatalogo() {
+    return _ejecutarExclusivo(() async {
+      final metadatos = await _leerMetadatos();
+      final descargados = metadatos?.nextOffset ?? 0;
+      if (descargados == 0) return;
+
+      _alCambiarSincronizando?.call(true);
+      try {
+        for (var offset = 0; offset < descargados; offset += tamanoRevision) {
+          final pagina = await _remoto.obtenerPaginaPokemon(
+            limite: tamanoRevision,
+            offset: offset,
+          );
+          await _local.upsertPokemons(pagina.aEntidades());
+        }
+        debugPrint('[Sync] Revision completa, $descargados Pokemon restaurados');
+      } finally {
+        _alCambiarSincronizando?.call(false);
+      }
     });
   }
 

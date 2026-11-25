@@ -37,6 +37,10 @@ abstract class PokemonRepository {
 
   Future<void> obtenerSiguientePagina();
 
+  // Vuelve a descargar lo guardado y lo sobrescribe
+  // es decir, restaura datos alterados
+  Future<void> revisarCatalogo();
+
   // Ultimo error de sincronizacion, null si no ha fallado
   Failure? get ultimoError;
 

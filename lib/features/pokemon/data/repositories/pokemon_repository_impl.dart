@@ -55,6 +55,9 @@ class PokemonRepositoryImpl implements PokemonRepository {
   Future<void> obtenerSiguientePagina() => _coordinadorSincronizacion.obtenerSiguientePagina();
 
   @override
+  Future<void> revisarCatalogo() => _coordinadorSincronizacion.revisarCatalogo();
+
+  @override
   Failure? get ultimoError => _coordinadorSincronizacion.ultimoError;
 
   @override
