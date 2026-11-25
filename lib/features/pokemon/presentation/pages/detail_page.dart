@@ -13,6 +13,7 @@ import '../widgets/indicador_conexion.dart';
 import '../widgets/detalle/chip_opcion.dart';
 import '../widgets/detalle/panel_detalle.dart';
 import '../widgets/detalle/panel_movimientos.dart';
+import '../widgets/detalle/selector_formas.dart';
 
 // Pantalla de detalle, solo dibuja lo que recibe
 class DetailPage extends StatelessWidget {
@@ -21,11 +22,22 @@ class DetailPage extends StatelessWidget {
     required this.pokemon,
     required this.detalle,
     required this.etiquetaHero,
+    required this.formas,
+    required this.nombreBase,
+    required this.idForma,
+    required this.formaPendiente,
+    required this.alElegirForma,
   });
 
   final Pokemon pokemon;
   final PokemonDetail? detalle;
   final String etiquetaHero;
+  final List<PokemonForm> formas;
+  final String nombreBase;
+  final int idForma;
+  // true si se eligió una forma que todavía no se ha descargado
+  final bool formaPendiente;
+  final ValueChanged<int> alElegirForma;
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +63,20 @@ class DetailPage extends StatelessWidget {
               ),
             ),
           ),
+          // Siempre está en la lista, así las secciones de abajo no cambian de posición
+          SliverToBoxAdapter(
+            child: SelectorFormas(
+              formas: formas,
+              nombreBase: nombreBase,
+              idElegido: idForma,
+              alElegir: alElegirForma,
+            ),
+          ),
           _SeccionesDetalle(
             pokemon: pokemon,
             detalle: detalle,
             estadisticas: estadisticas,
+            formaPendiente: formaPendiente,
           ),
         ],
       ),
@@ -80,11 +102,13 @@ class _SeccionesDetalle extends StatefulWidget {
     required this.pokemon,
     required this.detalle,
     required this.estadisticas,
+    required this.formaPendiente,
   });
 
   final Pokemon pokemon;
   final PokemonDetail? detalle;
   final List<PokemonStat> estadisticas;
+  final bool formaPendiente;
 
   @override
   State<_SeccionesDetalle> createState() => _SeccionesDetalleState();
@@ -125,6 +149,23 @@ class _SeccionesDetalleState extends State<_SeccionesDetalle> {
     final detalle = widget.detalle;
     const margen = EdgeInsets.fromLTRB(16, 0, 16, 24);
 
+    // Si la forma elegida no está descargada no se muestran datos de otra forma
+    if (widget.formaPendiente) {
+      return const [
+        SliverPadding(
+          padding: margen,
+          sliver: SliverToBoxAdapter(
+            child: PanelDetalle(
+              titulo: 'Forma',
+              hijo: Text(
+                'Esta forma todavía no se ha descargado, aparecerá cuando haya conexión',
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+
     return switch (_seccion) {
       _Seccion.info => [
         SliverPadding(
@@ -162,7 +203,10 @@ class _SeccionesDetalleState extends State<_SeccionesDetalle> {
               ),
             ),
           )
-              : PanelMovimientos(movimientos: detalle.movimientos),
+              : PanelMovimientos(
+            key: ValueKey(detalle.id),
+            movimientos: detalle.movimientos,
+          ),
         ),
       ],
       _Seccion.evolucion => [
