@@ -25,6 +25,8 @@ class DetailScreen extends ConsumerStatefulWidget {
 class _DetailScreenState extends ConsumerState<DetailScreen> {
   // null mientras se ve la forma original
   int? _formaElegida;
+  // Si se ve la imagen shiny, el alternador de la cabecera lo cambia
+  bool _shiny = false;
 
   // Las formas no están en el catálogo, así que se arma un Pokemon con su detalle
   // para reusar la cabecera, las estadísticas y las debilidades
@@ -66,6 +68,8 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
       idForma: idActual,
       formaPendiente: !esOriginal && detalleActual == null,
       alElegirForma: (id) => setState(() => _formaElegida = id),
+      esShiny: _shiny,
+      alCambiarShiny: (valor) => setState(() => _shiny = valor),
     );
   }
 }

@@ -27,6 +27,8 @@ class DetailPage extends StatelessWidget {
     required this.idForma,
     required this.formaPendiente,
     required this.alElegirForma,
+    required this.esShiny,
+    required this.alCambiarShiny,
   });
 
   final Pokemon pokemon;
@@ -38,11 +40,19 @@ class DetailPage extends StatelessWidget {
   // true si se eligió una forma que todavía no se ha descargado
   final bool formaPendiente;
   final ValueChanged<int> alElegirForma;
+  final bool esShiny;
+  final ValueChanged<bool> alCambiarShiny;
 
   @override
   Widget build(BuildContext context) {
+    // El shiny solo viene en el detalle, sin él no se ofrece el alternador
+    final imagenShiny = detalle?.artworkShiny ?? detalle?.spriteShiny;
+    final hayShiny = imagenShiny != null;
+    final verShiny = esShiny && hayShiny;
     // La imagen oficial si existe, si no el sprite (RF-DET-01)
-    final imagen = detalle?.artwork ?? pokemon.artworkUrl ?? pokemon.imageUrl;
+    final imagen = verShiny
+        ? imagenShiny
+        : (detalle?.artwork ?? pokemon.artworkUrl ?? pokemon.imageUrl);
     // Las estadísticas ya vienen con el catálogo, así se ven al instante y sin conexión
     final estadisticas = pokemon.stats.isNotEmpty
         ? pokemon.stats
@@ -60,6 +70,8 @@ class DetailPage extends StatelessWidget {
                 pokemon: pokemon,
                 imagen: imagen,
                 etiquetaHero: etiquetaHero,
+                esShiny: verShiny,
+                alCambiarShiny: hayShiny ? alCambiarShiny : null,
               ),
             ),
           ),

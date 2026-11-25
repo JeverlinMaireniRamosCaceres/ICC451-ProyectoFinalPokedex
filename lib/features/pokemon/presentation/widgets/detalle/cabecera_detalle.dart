@@ -6,6 +6,7 @@ import '../../../../../core/widgets/pokemon_image.dart';
 import '../../../domain/entities/pokemon.dart';
 import '../chip_tipo.dart';
 import '../type_colors.dart';
+import 'chip_opcion.dart';
 
 // Número, imagen grande, nombre y tipos, con el borde y la sombra del tipo
 class CabeceraDetalle extends StatelessWidget {
@@ -14,11 +15,17 @@ class CabeceraDetalle extends StatelessWidget {
     required this.pokemon,
     required this.imagen,
     required this.etiquetaHero,
+    this.esShiny = false,
+    this.alCambiarShiny,
   });
 
   final Pokemon pokemon;
   final String? imagen;
   final String etiquetaHero;
+  final bool esShiny;
+  // null cuando no hay imagen shiny, así no se muestra el alternador
+  final ValueChanged<bool>? alCambiarShiny;
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +35,10 @@ class CabeceraDetalle extends StatelessWidget {
     final colorBorde = pokemon.types.isEmpty
         ? Paleta.borde
         : colorBordeTipo(colorDeTipo(pokemon.types.first.name));
+
+    final cambiarShiny = alCambiarShiny;
+    // Sin animaciones si el teléfono las tiene desactivadas
+    final sinAnimaciones = MediaQuery.disableAnimationsOf(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -51,13 +62,44 @@ class CabeceraDetalle extends StatelessWidget {
             // Misma etiqueta que la tarjeta, así la imagen vuela del catálogo al detalle
             child: Hero(
               tag: etiquetaHero,
-              child: PokemonImage(
-                url: imagen,
-                size: 240,
-                semanticLabel: nombre,
+              child: AnimatedSwitcher(
+                duration: sinAnimaciones
+                    ? Duration.zero
+                    : const Duration(milliseconds: 250),
+                // La key hace que el switcher note que cambió la imagen
+                child: KeyedSubtree(
+                  key: ValueKey(imagen),
+                  child: PokemonImage(
+                    url: imagen,
+                    size: 240,
+                    semanticLabel: esShiny ? '$nombre shiny' : nombre,
+                  ),
+                ),
               ),
             ),
           ),
+          if (cambiarShiny != null) ...[
+            const SizedBox(height: 8),
+            // Wrap pasa los chips a otra línea con texto grande (RNF-ACC-04)
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ChipOpcion(
+                  etiqueta: 'Normal',
+                  elegido: !esShiny,
+                  alElegir: () => cambiarShiny(false),
+                ),
+                ChipOpcion(
+                  etiqueta: 'Shiny',
+                  elegido: esShiny,
+                  alElegir: () => cambiarShiny(true),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
           // El nombre se achica para caber completo con texto grande (RNF-ACC-04)
           FittedBox(
             fit: BoxFit.scaleDown,
