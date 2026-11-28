@@ -192,4 +192,78 @@ class PokemonLocalDataSource {
     return _db.into(_db.pokemonDetails).insertOnConflictUpdate(detalle.aFila());
   }
 
+  // Ids de los favoritos, se actualiza solo cuando cambia la tabla
+  // Sirve para saber qué corazones van marcados sin traer los Pokémon completos
+  Stream<Set<int>> observarIdsFavoritos() {
+    return _db
+        .select(_db.favorites)
+        .watch()
+        .map((filas) => filas.map((f) => f.pokemonId).toSet());
+  }
+
+  // Favoritos con sus tipos, del más reciente al más antiguo
+  // El inner join descarta cualquier favorito sin su Pokemon en el catálogo
+  Stream<List<PokemonWithTypes>> observarFavoritos() {
+    final query = _db.select(_db.favorites).join([
+      innerJoin(
+        _db.pokemons,
+        _db.pokemons.id.equalsExp(_db.favorites.pokemonId),
+      ),
+      leftOuterJoin(
+        _db.pokemonTypes,
+        _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
+      ),
+      leftOuterJoin(
+        _db.types,
+        _db.types.id.equalsExp(_db.pokemonTypes.typeId),
+      ),
+    ]);
+
+    // createdAt se guarda en segundos, el id desempata para que las filas
+    // de un mismo Pokemon queden juntas y _agrupar funcione
+    query.orderBy([
+      OrderingTerm.desc(_db.favorites.createdAt),
+      OrderingTerm.asc(_db.pokemons.id),
+      OrderingTerm.asc(_db.pokemonTypes.slot),
+    ]);
+
+    return query.watch().map(_agrupar);
+  }
+
+  // Marca el favorito si no lo era, y lo quita si lo era
+  // Leer y escribir van en una transacción para que dos toques seguidos no se pisen
+  Future<void> alternarFavorito(int pokemonId) {
+    return _db.transaction(() async {
+      final filtro = _db.favorites.pokemonId.equals(pokemonId);
+      final existente = await (_db.select(_db.favorites)
+        ..where((f) => filtro))
+          .getSingleOrNull();
+
+      if (existente == null) {
+        await _db.into(_db.favorites).insert(
+          FavoritesCompanion.insert(
+            pokemonId: Value(pokemonId),
+            createdAt: DateTime.now(),
+          ),
+        );
+      } else {
+        await (_db.delete(_db.favorites)..where((f) => filtro)).go();
+      }
+    });
+  }
+
+  // Ids de los favoritos que todavía no tienen su detalle guardado
+  // El left join deja la fila aunque no haya detalle, y el where se queda con esas
+  Future<List<int>> favoritosSinDetalle() async {
+    final consulta = _db.select(_db.favorites).join([
+      leftOuterJoin(
+        _db.pokemonDetails,
+        _db.pokemonDetails.pokemonId.equalsExp(_db.favorites.pokemonId),
+      ),
+    ])..where(_db.pokemonDetails.pokemonId.isNull());
+
+    final filas = await consulta.get();
+    return filas.map((f) => f.readTable(_db.favorites).pokemonId).toList();
+  }
+
 }
