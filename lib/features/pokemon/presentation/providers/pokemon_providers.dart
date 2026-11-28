@@ -288,3 +288,24 @@ final catalogoParcialProvider = Provider<bool>((ref) {
   final estado = ref.watch(syncStateProvider).value;
   return estado != SyncState.completo;
 });
+
+// Ids de los favoritos, cada corazón mira si su id está aquí
+// Así marcar un favorito no vuelve a emitir toda la lista del catálogo
+final idsFavoritosProvider = StreamProvider<Set<int>>((ref) {
+  return ref.watch(pokemonRepositoryProvider).observarIdsFavoritos();
+});
+
+// Pokémon favoritos para su pantalla, del más reciente al más antiguo
+final favoritosStreamProvider = StreamProvider<List<Pokemon>>((ref) {
+  return ref.watch(pokemonRepositoryProvider).observarFavoritos();
+});
+
+// Descarga el detalle de los favoritos que todavía no lo tienen guardado
+// Corre al crearse y cada vez que regresa la conexión, porque observa el contador
+// Así un favorito marcado sin conexión se completa solo cuando vuelve internet
+final sincronizacionFavoritosProvider = Provider<void>((ref) {
+  ref.watch(conexionRecuperadaProvider);
+  unawaited(
+    ref.watch(pokemonRepositoryProvider).sincronizarDetallesFavoritos(),
+  );
+});

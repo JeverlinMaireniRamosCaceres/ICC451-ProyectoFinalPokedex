@@ -74,6 +74,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
       alElegirForma: (id) => setState(() => _formaElegida = id),
       esShiny: _shiny,
       alCambiarShiny: (valor) => setState(() => _shiny = valor),
+      idBase: widget.pokemon.id,
     );
   }
 }

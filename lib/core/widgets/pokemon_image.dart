@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../cache/cache_imagenes.dart';
 
 // Muestra la imagen del pokemon
 // La guarda en el telefono para verla sin conexion
@@ -48,6 +49,7 @@ class PokemonImage extends StatelessWidget {
   Widget _cargar(String direccion, String? respaldo, int px) {
     return CachedNetworkImage(
       imageUrl: direccion,
+      cacheManager: CacheImagenes.gestor,
       memCacheWidth: px,
       memCacheHeight: px,
       fit: BoxFit.contain,

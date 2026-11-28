@@ -14,6 +14,8 @@ import '../widgets/detalle/chip_opcion.dart';
 import '../widgets/detalle/panel_detalle.dart';
 import '../widgets/detalle/panel_movimientos.dart';
 import '../widgets/detalle/selector_formas.dart';
+import '../../../../core/utils/texto.dart';
+import '../widgets/boton_favorito.dart';
 
 // Pantalla de detalle, solo dibuja lo que recibe
 class DetailPage extends StatelessWidget {
@@ -29,7 +31,8 @@ class DetailPage extends StatelessWidget {
     required this.alElegirForma,
     required this.esShiny,
     required this.alCambiarShiny,
-    required this.reintentoImagen
+    required this.reintentoImagen,
+    required this.idBase,
   });
 
   final Pokemon pokemon;
@@ -44,6 +47,8 @@ class DetailPage extends StatelessWidget {
   final bool esShiny;
   final ValueChanged<bool> alCambiarShiny;
   final int reintentoImagen;
+  // Id del Pokémon del catálogo, el favorito es de este aunque se vea otra forma
+  final int idBase;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +70,12 @@ class DetailPage extends StatelessWidget {
         : (detalle?.estadisticas ?? const <PokemonStat>[]);
 
     return Scaffold(
-      appBar: AppBar(actions: const [IndicadorConexion()]),
+      appBar: AppBar(
+        actions: [
+          BotonFavorito(pokemonId: idBase, nombre: capitalizar(nombreBase)),
+          const IndicadorConexion(),
+        ],
+      ),
       // Con slivers, las secciones largas que vienen después se construyen solo cuando se ven
       body: CustomScrollView(
         slivers: [

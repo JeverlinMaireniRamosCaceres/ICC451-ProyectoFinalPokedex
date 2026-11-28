@@ -4,13 +4,13 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../domain/entities/pokemon.dart';
 import '../providers/catalog_state.dart';
-import '../widgets/pokemon_card.dart';
 import '../../../../core/network/connectivity_monitor.dart';
 import '../../../../core/widgets/connectivity_indicator.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/sakura.dart';
 import '../../domain/repositories/pokemon_repository.dart';
 import '../../domain/type_effectiveness.dart';
+import '../widgets/rejilla_pokemon.dart';
 
 // Pantalla del catálogo, solo dibuja según el estado que recibe
 class CatalogPage extends StatelessWidget {
@@ -173,49 +173,12 @@ class CatalogPage extends StatelessWidget {
                   icono: Icons.search_off,
                 ),
               ),
-              CatalogSuccess(:final pokemons) => _PokemonGrid(
+              CatalogSuccess(:final pokemons) => RejillaPokemon(
                 pokemons: pokemons,
                 alAbrirDetalle: alAbrirDetalle,
               ),
             },
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PokemonGrid extends StatelessWidget {
-  const _PokemonGrid({required this.pokemons, required this.alAbrirDetalle});
-
-  final List<Pokemon> pokemons;
-  final ValueChanged<Pokemon> alAbrirDetalle;
-
-  @override
-  Widget build(BuildContext context) {
-    // La altura crece con el texto del sistema para que no se corte
-    final escala = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
-
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
-      // Se agregan columnas solas en pantallas anchas
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 220,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          mainAxisExtent: 196 + 90 * (escala - 1),
-        ),
-        // Solo se construyen las tarjetas visibles
-        delegate: SliverChildBuilderDelegate(
-              (_, i) {
-            final pokemon = pokemons[i];
-            return PokemonCard(
-              pokemon: pokemon,
-              alTocar: () => alAbrirDetalle(pokemon),
-            );
-          },
-          childCount: pokemons.length,
         ),
       ),
     );

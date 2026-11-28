@@ -46,4 +46,17 @@ abstract class PokemonRepository {
   // Descarga el detalle de la API y lo guarda en la base
   Future<void> sincronizarDetalle(int id);
 
+  // Ids de los Pokemon favoritos, para saber qué corazones van marcados
+  Stream<Set<int>> observarIdsFavoritos();
+
+  // Pokemon favoritos, del más reciente al más antiguo
+  Stream<List<Pokemon>> observarFavoritos();
+
+  // Marca el favorito si no lo era y lo quita si lo era
+  Future<void> alternarFavorito(int pokemonId);
+
+  // Descarga el detalle de los favoritos que todavía no lo tienen guardado
+  // Así están completos sin conexión, no hace nada si ya los tienen todos
+  Future<void> sincronizarDetallesFavoritos();
+
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/widgets/empty_state.dart';
 import '../features/pokemon/presentation/pages/catalog_screen.dart';
 import '../features/pokemon/presentation/widgets/indicador_conexion.dart';
+import '../features/pokemon/presentation/pages/favorites_screen.dart';
 
 // Pantalla principal, tiene la barra de abajo y las pestañas
 class MainScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _indice,
         children: const [
           CatalogScreen(),
-          _Proximamente(titulo: 'Favoritos'),
+          FavoritesScreen(),
           _Proximamente(titulo: 'Trivia'),
         ],
       ),
